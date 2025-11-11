@@ -93,7 +93,33 @@ export function AdminWorksManager() {
       fd.append("type", form.type);
 
       const res = await fetch("/api/admin/works", { method: "POST", body: fd });
-      const data = await res.json();
+      
+      // Read response as text first, then try to parse as JSON
+      const responseText = await res.text();
+      let data: any = {};
+      
+      // Try to parse as JSON
+      try {
+        data = JSON.parse(responseText);
+      } catch (jsonError) {
+        // Response is not valid JSON
+        console.error("JSON parse error:", jsonError);
+        console.error("Response text:", responseText);
+        console.error("Status:", res.status, res.statusText);
+        console.error("Content-Type:", res.headers.get("content-type"));
+        
+        // Show user-friendly error message
+        if (res.status === 413) {
+          alert("Dosya çok büyük. Maksimum dosya boyutu 50MB'dır.");
+        } else if (res.status === 401) {
+          alert("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+          window.location.href = "/admin/login";
+        } else {
+          alert(`Yükleme hatası: ${res.status} ${res.statusText}. Lütfen tekrar deneyin.`);
+        }
+        return;
+      }
+      
       if (res.ok) {
         setForm({ artistSlug: form.artistSlug, brand: "", projectTitle: "", type: "photo", file: null });
         await loadWorks(true);
