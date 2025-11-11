@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
+import { put } from "@vercel/blob";
 import { validateFileUpload, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, ALLOWED_IMAGE_MIMES, ALLOWED_VIDEO_MIMES, MAX_FILE_SIZE } from "@/lib/security";
 import { validateSlug } from "@/lib/security";
 
@@ -64,12 +65,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: fileValidation.error }, { status: 400 });
     }
 
-    // Ensure artist directory exists (use sanitized slug)
-    const artistDir = path.join(ARTIST_MEDIA_ROOT, sanitizedSlug);
-    if (!fs.existsSync(artistDir)) {
-      fs.mkdirSync(artistDir, { recursive: true });
-    }
-
+    // Check if we're on Vercel and have Blob Storage token
+    const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
+    const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+    
     // Determine file extension from original filename or mime
     const originalName = (file as any).name || "upload";
     let ext = path.extname(originalName);
@@ -91,14 +90,72 @@ export async function POST(request: NextRequest) {
         : `upload-${Date.now()}`;
 
     const fileName = `${baseName}${ext.toLowerCase()}`;
-    const targetPath = path.join(artistDir, fileName);
+    let publicUrl: string;
 
-    // Write file
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    fs.writeFileSync(targetPath, buffer);
+    // Use Vercel Blob Storage if available, otherwise use file system
+    if (isVercel && hasBlobToken) {
+      // Upload to Vercel Blob Storage
+      try {
+        const blobPath = `artists/${sanitizedSlug}/${fileName}`;
+        const blob = await put(blobPath, file, {
+          access: 'public',
+          token: process.env.BLOB_READ_WRITE_TOKEN,
+        });
+        publicUrl = blob.url;
+      } catch (blobError: any) {
+        console.error("Error uploading to Blob Storage:", blobError);
+        return NextResponse.json(
+          { 
+            error: `Vercel Blob Storage'a yükleme başarısız: ${blobError.message}`,
+          },
+          { status: 500 }
+        );
+      }
+    } else if (isVercel && !hasBlobToken) {
+      // On Vercel but no Blob Storage token
+      return NextResponse.json(
+        { 
+          error: "Vercel'de file upload için Vercel Blob Storage gerekli. Lütfen Vercel Dashboard'da Blob Storage oluşturun ve BLOB_READ_WRITE_TOKEN environment variable'ını ekleyin. Detaylar için: VERCEL-FILE-UPLOAD-SOLUTION.md",
+        },
+        { status: 503 }
+      );
+    } else {
+      // Local development: use file system
+      const artistDir = path.join(ARTIST_MEDIA_ROOT, sanitizedSlug);
+      
+      try {
+        if (!fs.existsSync(artistDir)) {
+          fs.mkdirSync(artistDir, { recursive: true });
+        }
+      } catch (dirError: any) {
+        console.error("Error creating directory:", dirError);
+        return NextResponse.json(
+          { 
+            error: `Klasör oluşturulamadı: ${dirError.message}`,
+          },
+          { status: 500 }
+        );
+      }
 
-    const publicUrl = `/artists/${sanitizedSlug}/${fileName}`;
+      const targetPath = path.join(artistDir, fileName);
+
+      // Write file to local file system
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        fs.writeFileSync(targetPath, buffer);
+      } catch (writeError: any) {
+        console.error("Error writing file:", writeError);
+        return NextResponse.json(
+          { 
+            error: `Dosya yazılamadı: ${writeError.message}`,
+          },
+          { status: 500 }
+        );
+      }
+
+      publicUrl = `/artists/${sanitizedSlug}/${fileName}`;
+    }
 
     return NextResponse.json({
       success: true,
