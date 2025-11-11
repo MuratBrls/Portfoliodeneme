@@ -75,9 +75,10 @@ export async function POST(request: NextRequest) {
         );
       }
     } else if (isVercel && !hasBlobToken) {
+      // On Vercel but no Blob Storage token - inform user to upload locally
       return NextResponse.json(
         { 
-          error: "Vercel'de profile image upload için Vercel Blob Storage gerekli. Lütfen Vercel Dashboard'da Blob Storage oluşturun.",
+          error: "Vercel'de file upload yapılamaz. Lütfen profile image'ı local'de yükleyin ve GitHub'a push edin. Local'de: npm run dev ile siteyi başlatın, admin panelden upload yapın, dosyaları GitHub'a commit edip push edin.",
         },
         { status: 503 }
       );
