@@ -6,6 +6,14 @@
   "regions": ["iad1"],
   "env": {
     "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/app/api/admin/works/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/admin/artists/profile/route.ts": {
+      "maxDuration": 30
+    }
   }
 }
 
