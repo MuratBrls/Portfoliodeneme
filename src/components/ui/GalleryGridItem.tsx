@@ -31,7 +31,8 @@ const creditVariants = {
 
 export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
   const isVideo = work.type === "video";
-  const hasVideoUrl = isVideo && work.videoUrl;
+  const videoUrl = work.videoUrl;
+  const hasVideoUrl = isVideo && videoUrl && typeof videoUrl === "string";
 
   const handleClick = () => {
     if (!isVideo) {
@@ -48,10 +49,10 @@ export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
       className="relative mb-4 break-inside-avoid cursor-pointer overflow-hidden lg:mb-8"
       onClick={handleClick}
     >
-      {isVideo && hasVideoUrl ? (
+      {isVideo && hasVideoUrl && videoUrl ? (
         <div className="w-full" style={{ aspectRatio: "3/4" }}>
           <VideoEmbed
-            url={work.videoUrl}
+            url={videoUrl}
             thumbnailUrl={work.url}
             title={work.projectTitle}
             className="h-full w-full"
