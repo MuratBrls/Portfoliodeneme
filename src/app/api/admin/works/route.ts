@@ -44,8 +44,21 @@ export async function POST(request: NextRequest) {
     const type = typeRaw === "video" ? "video" : "photo";
     
     // Validate file upload
-    const allowedExtensions = type === "video" ? ALLOWED_VIDEO_EXTENSIONS : ALLOWED_IMAGE_EXTENSIONS;
-    const allowedMimes = type === "video" ? ALLOWED_VIDEO_MIMES : ALLOWED_IMAGE_MIMES;
+    // For video type, we allow both image (thumbnail) and video files
+    // For photo type, we only allow image files
+    let allowedExtensions: string[];
+    let allowedMimes: string[];
+    
+    if (type === "video") {
+      // Video type can accept both images (for thumbnails) and videos
+      allowedExtensions = [...ALLOWED_IMAGE_EXTENSIONS, ...ALLOWED_VIDEO_EXTENSIONS];
+      allowedMimes = [...ALLOWED_IMAGE_MIMES, ...ALLOWED_VIDEO_MIMES];
+    } else {
+      // Photo type only accepts images
+      allowedExtensions = [...ALLOWED_IMAGE_EXTENSIONS];
+      allowedMimes = [...ALLOWED_IMAGE_MIMES];
+    }
+    
     const fileValidation = validateFileUpload(file, allowedExtensions, allowedMimes, MAX_FILE_SIZE);
     if (!fileValidation.valid) {
       return NextResponse.json({ error: fileValidation.error }, { status: 400 });
@@ -95,9 +108,20 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Upload error:", error);
     const isProduction = process.env.NODE_ENV === "production";
+    
+    // Provide more detailed error messages in development
+    let errorMessage = "Yükleme sırasında hata oluştu";
+    if (!isProduction) {
+      errorMessage = error.message || error.toString() || "Yükleme sırasında hata oluştu";
+      // Log stack trace in development
+      if (error.stack) {
+        console.error("Stack trace:", error.stack);
+      }
+    }
+    
     return NextResponse.json(
       { 
-        error: isProduction ? "Yükleme sırasında hata oluştu" : error.message || "Yükleme sırasında hata oluştu",
+        error: errorMessage,
       },
       { status: 500 },
     );

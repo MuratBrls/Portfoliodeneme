@@ -101,11 +101,15 @@ export function AdminWorksManager() {
           console.info(data.message);
         }
       } else {
-        alert(data.error || "Yükleme sırasında hata oluştu");
+        // Show detailed error message
+        const errorMsg = data.error || "Yükleme sırasında hata oluştu";
+        console.error("Upload error:", errorMsg, data);
+        alert(errorMsg);
       }
-    } catch (err) {
-      console.error(err);
-      alert("Yükleme sırasında hata oluştu");
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      const errorMsg = err.message || "Yükleme sırasında hata oluştu. Lütfen tekrar deneyin.";
+      alert(errorMsg);
     } finally {
       setUploading(false);
     }
