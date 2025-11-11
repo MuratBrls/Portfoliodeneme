@@ -11,9 +11,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="light"
+      defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      storageKey="kolektif-theme"
     >
       {children}
     </NextThemesProvider>

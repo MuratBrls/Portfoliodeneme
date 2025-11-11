@@ -46,7 +46,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
         )}
         <div className="space-y-4">
           <div className="space-y-2 text-xs uppercase tracking-[0.3em]">
-            <p className="text-sm font-semibold tracking-[0.2em]">
+            <p className="text-sm font-semibold tracking-[0.2em] text-black dark:text-white">
               {artist.name}
             </p>
             <p className="text-neutral-500 dark:text-neutral-400">

@@ -45,7 +45,7 @@ export default function ContactPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-16 md:px-6">
       <header className="mb-12 space-y-3">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em]">Contact</h1>
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Contact</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-300">
           Yeni bir proje veya prodüksiyon için bize yazın. 24 saat içinde dönüş yapıyoruz.
         </p>

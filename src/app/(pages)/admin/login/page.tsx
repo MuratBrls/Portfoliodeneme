@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-semibold uppercase tracking-[0.4em]">Admin Girişi</h1>
+          <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Admin Girişi</h1>
           <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
             Yönetim paneline erişmek için şifrenizi girin
           </p>

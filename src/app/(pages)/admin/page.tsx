@@ -19,7 +19,7 @@ export default function AdminPage() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em]">Admin Panel</h1>
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Admin Panel</h1>
         <div className="flex items-center gap-3">
           <Link
             href="/"

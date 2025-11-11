@@ -8,9 +8,9 @@ export default function ArtistsPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-16 md:px-6">
       <header className="mb-12 space-y-3">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em]">Artists</h1>
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Artists</h1>
         <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
-          Kolektif’in çekirdek kadrosu. Işıkla, renkle ve ritimle çalışan multidisipliner sanatçılar.
+          Kolektif'in çekirdek kadrosu. Işıkla, renkle ve ritimle çalışan multidisipliner sanatçılar.
         </p>
       </header>
       <section className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">

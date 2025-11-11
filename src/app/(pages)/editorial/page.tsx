@@ -63,21 +63,21 @@ export default function EditorialPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-16 md:px-6">
       <header className="mb-12 space-y-3">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em]">Editorial</h1>
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Editorial</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-300">
           Çalıştığımız markalar ve onlarla birlikte gerçekleştirdiğimiz projeler.
         </p>
       </header>
 
       {brands.length === 0 ? (
-        <div className="py-12 text-center text-neutral-500">
+        <div className="py-12 text-center text-neutral-500 dark:text-neutral-400">
           Henüz marka eklenmemiş
         </div>
       ) : (
         <section className="space-y-12">
           {brands.map(({ normalized, displayName, works: brandWorks }) => (
             <article key={normalized} className="space-y-4">
-              <h2 className="text-xl font-semibold uppercase tracking-[0.2em]">{displayName}</h2>
+              <h2 className="text-xl font-semibold uppercase tracking-[0.2em] text-black dark:text-white">{displayName}</h2>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {brandWorks.slice(0, 6).map((work) => (
                   <div key={work.id} className="relative aspect-square overflow-hidden bg-neutral-100 dark:bg-neutral-900">
@@ -92,7 +92,7 @@ export default function EditorialPage() {
                 ))}
               </div>
               {brandWorks.length > 6 && (
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   +{brandWorks.length - 6} daha fazla görsel
                 </p>
               )}
