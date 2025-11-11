@@ -19,6 +19,9 @@ export function AdminWorksManager() {
     type: "photo" as "photo" | "video",
     file: null as File | null,
   });
+  const [editingVideoUrl, setEditingVideoUrl] = useState<string | null>(null);
+  const [videoUrlForm, setVideoUrlForm] = useState<{ workId: string; videoUrl: string; artistSlug: string } | null>(null);
+  const [savingVideoUrl, setSavingVideoUrl] = useState(false);
 
   useEffect(() => {
     loadInitial();
@@ -257,6 +260,21 @@ export function AdminWorksManager() {
                   >
                     Portföyü Gör
                   </Link>
+                  {work.type === "video" && (
+                    <button
+                      onClick={() => {
+                        setVideoUrlForm({
+                          workId: work.id,
+                          videoUrl: work.videoUrl || "",
+                          artistSlug: work.artistSlug,
+                        });
+                        setEditingVideoUrl(work.id);
+                      }}
+                      className="rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white shadow-md transition-all duration-200 hover:bg-blue-700 hover:shadow-lg"
+                    >
+                      {work.videoUrl ? "Video URL Düzenle" : "Video URL Ekle"}
+                    </button>
+                  )}
                   {!isExternalUrl(work.url) && (
                     <button
                       onClick={() => handleDelete(work)}
@@ -273,14 +291,75 @@ export function AdminWorksManager() {
               <p className="text-xs font-medium">{work.projectTitle}</p>
               <Link
                 href={`/artists/${work.artistSlug}`}
-                className="text-xs text-neutral-500 hover:underline"
+                className="text-xs text-neutral-500 hover:underline dark:text-neutral-400"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(event) => event.stopPropagation()}
               >
                 {work.artistName}
               </Link>
-              <p className="text-xs text-neutral-400">{work.brand}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500">{work.brand}</p>
+              {work.type === "video" && work.videoUrl && (
+                <p className="mt-1 text-xs text-green-600 dark:text-green-400">✓ Video URL: {work.videoUrl.substring(0, 30)}...</p>
+              )}
+              {work.type === "video" && !work.videoUrl && (
+                <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">⚠ Video URL eklenmedi</p>
+              )}
+              {editingVideoUrl === work.id && videoUrlForm && (
+                <div className="mt-3 space-y-2 rounded-md border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+                  <label className="block text-xs font-medium">YouTube veya Vimeo URL</label>
+                  <input
+                    type="text"
+                    value={videoUrlForm.videoUrl}
+                    onChange={(e) => setVideoUrlForm({ ...videoUrlForm, videoUrl: e.target.value })}
+                    placeholder="https://youtube.com/watch?v=... veya https://vimeo.com/..."
+                    className="w-full rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs dark:border-neutral-700 dark:bg-neutral-800"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={async () => {
+                        setSavingVideoUrl(true);
+                        try {
+                          const res = await fetch("/api/admin/works/video-url", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              workId: videoUrlForm.workId,
+                              videoUrl: videoUrlForm.videoUrl || null,
+                              artistSlug: videoUrlForm.artistSlug,
+                            }),
+                          });
+                          if (res.ok) {
+                            setEditingVideoUrl(null);
+                            setVideoUrlForm(null);
+                            await loadWorks(true);
+                          } else {
+                            const data = await res.json();
+                            alert(data.error || "Video URL kaydedilemedi");
+                          }
+                        } catch (error) {
+                          alert("Video URL kaydedilirken hata oluştu");
+                        } finally {
+                          setSavingVideoUrl(false);
+                        }
+                      }}
+                      disabled={savingVideoUrl}
+                      className="flex-1 rounded-md bg-black px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                    >
+                      {savingVideoUrl ? "Kaydediliyor..." : "Kaydet"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingVideoUrl(null);
+                        setVideoUrlForm(null);
+                      }}
+                      className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium transition-all hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                    >
+                      İptal
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

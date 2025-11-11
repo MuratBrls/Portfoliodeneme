@@ -8,6 +8,7 @@ export interface WorkImage {
   type: "photo" | "video";
   projectTitle: string;
   brand: string;
+  videoUrl?: string; // YouTube or Vimeo URL for video type
 }
 
 export interface ArtistMeta {
@@ -151,6 +152,8 @@ function buildWorkFromFilename(slug: string, fileName: string, index: number): W
 
 function loadPortfolioFromDisk(slug: string): WorkImage[] {
   const directoryPath = path.join(ARTIST_MEDIA_ROOT, slug);
+  const metadata = loadMetadata();
+  const portfolioMetadata = metadata[slug]?.portfolio || {};
 
   if (!fs.existsSync(directoryPath)) {
     return [];
@@ -161,7 +164,17 @@ function loadPortfolioFromDisk(slug: string): WorkImage[] {
   return entries
     .filter((entry) => entry.isFile())
     .filter((entry) => !entry.name.toLowerCase().startsWith(`${PROFILE_BASENAME}.`))
-    .map((entry, index) => buildWorkFromFilename(slug, entry.name, index))
+    .map((entry, index) => {
+      const work = buildWorkFromFilename(slug, entry.name, index);
+      if (work) {
+        // Add videoUrl from metadata if available
+        const workMetadata = portfolioMetadata[work.id];
+        if (workMetadata?.videoUrl) {
+          work.videoUrl = workMetadata.videoUrl;
+        }
+      }
+      return work;
+    })
     .filter((work): work is WorkImage => Boolean(work));
 }
 
@@ -186,7 +199,17 @@ function findProfileImage(slug: string): string | null {
   return `/artists/${slug}/${entry.name}`;
 }
 
-function loadMetadata(): Record<string, Partial<ArtistMeta>> {
+interface PortfolioMetadata {
+  [workId: string]: {
+    videoUrl?: string;
+  };
+}
+
+interface ArtistMetadata extends Partial<ArtistMeta> {
+  portfolio?: PortfolioMetadata;
+}
+
+function loadMetadata(): Record<string, ArtistMetadata> {
   const metadataPath = path.join(process.cwd(), "data", "artists-metadata.json");
   if (fs.existsSync(metadataPath)) {
     try {

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { GalleryWork } from "@/data/artists";
+import { VideoEmbed } from "./VideoEmbed";
 
 interface GalleryGridItemProps {
   work: GalleryWork;
@@ -30,6 +31,7 @@ const creditVariants = {
 
 export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
   const isVideo = work.type === "video";
+  const hasVideoUrl = isVideo && work.videoUrl;
 
   const handleClick = () => {
     if (!isVideo) {
@@ -46,8 +48,17 @@ export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
       className="relative mb-4 break-inside-avoid cursor-pointer overflow-hidden lg:mb-8"
       onClick={handleClick}
     >
-      {isVideo ? (
-        <div className="flex aspect-[3/4] w-full items-center justify-center bg-neutral-900/80 text-xs uppercase tracking-[0.2em] text-white">
+      {isVideo && hasVideoUrl ? (
+        <div className="w-full" style={{ aspectRatio: "3/4" }}>
+          <VideoEmbed
+            url={work.videoUrl}
+            thumbnailUrl={work.url}
+            title={work.projectTitle}
+            className="h-full w-full"
+          />
+        </div>
+      ) : isVideo ? (
+        <div className="flex aspect-[3/4] w-full items-center justify-center bg-neutral-900/80 text-xs uppercase tracking-[0.2em] text-white dark:bg-neutral-800">
           Video: {work.projectTitle}
         </div>
       ) : (
@@ -61,32 +72,36 @@ export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
         />
       )}
 
-      <motion.div
-        variants={overlayVariants}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="pointer-events-none absolute inset-0 bg-black"
-      />
+      {!hasVideoUrl && (
+        <motion.div
+          variants={overlayVariants}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="pointer-events-none absolute inset-0 bg-black"
+        />
+      )}
 
-      <motion.div
-        variants={creditVariants}
-        className="pointer-events-none absolute inset-x-0 bottom-0 w-full p-4 text-white"
-      >
-        <Link
-          href={`/artists/${work.artistSlug}`}
-          className="pointer-events-auto text-lg font-semibold tracking-wide hover:underline"
-          onClick={(event) => event.stopPropagation()}
+      {!hasVideoUrl && (
+        <motion.div
+          variants={creditVariants}
+          className="pointer-events-none absolute inset-x-0 bottom-0 w-full p-4 text-white"
         >
-          {work.artistName}
-        </Link>
-        <div className="mt-1 text-xs uppercase tracking-[0.25em] text-white/80">
-          {work.artistSpecialty}
-        </div>
-        <div className="my-3 h-px w-6 bg-white/70" />
-        <div className="space-y-1 text-sm">
-          <span className="block text-white/80">{work.brand}</span>
-          <span className="block font-light tracking-wide">{work.projectTitle}</span>
-        </div>
-      </motion.div>
+          <Link
+            href={`/artists/${work.artistSlug}`}
+            className="pointer-events-auto text-lg font-semibold tracking-wide hover:underline"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {work.artistName}
+          </Link>
+          <div className="mt-1 text-xs uppercase tracking-[0.25em] text-white/80">
+            {work.artistSpecialty}
+          </div>
+          <div className="my-3 h-px w-6 bg-white/70" />
+          <div className="space-y-1 text-sm">
+            <span className="block text-white/80">{work.brand}</span>
+            <span className="block font-light tracking-wide">{work.projectTitle}</span>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
