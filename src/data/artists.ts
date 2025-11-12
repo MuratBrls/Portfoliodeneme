@@ -154,7 +154,31 @@ function loadPortfolioFromDisk(slug: string): WorkImage[] {
   const directoryPath = path.join(ARTIST_MEDIA_ROOT, slug);
   const metadata = loadMetadata();
   const portfolioMetadata = metadata[slug]?.portfolio || {};
+  const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
 
+  // On Vercel, read works from metadata (Blob Storage works are stored in metadata)
+  // Note: loadMetadata() reads from file system, but on Vercel we need GitHub metadata
+  // For now, we'll read from the file system metadata which should be synced from GitHub
+  // In the future, we could make this async and read directly from GitHub
+  if (isVercel) {
+    const works: WorkImage[] = [];
+    for (const [workId, workMeta] of Object.entries(portfolioMetadata)) {
+      if (workMeta && typeof workMeta === "object" && "url" in workMeta) {
+        works.push({
+          id: workId,
+          url: workMeta.url as string,
+          alt: workMeta.alt as string || "",
+          type: (workMeta.type as "photo" | "video") || "photo",
+          projectTitle: workMeta.projectTitle as string || "",
+          brand: workMeta.brand as string || "",
+          videoUrl: workMeta.videoUrl as string | undefined,
+        });
+      }
+    }
+    return works;
+  }
+
+  // Local: read from file system
   if (!fs.existsSync(directoryPath)) {
     return [];
   }
@@ -169,8 +193,22 @@ function loadPortfolioFromDisk(slug: string): WorkImage[] {
       if (work) {
         // Add videoUrl from metadata if available
         const workMetadata = portfolioMetadata[work.id];
-        if (workMetadata?.videoUrl) {
-          work.videoUrl = workMetadata.videoUrl;
+        if (workMetadata && typeof workMetadata === "object") {
+          if ("videoUrl" in workMetadata) {
+            work.videoUrl = workMetadata.videoUrl as string | undefined;
+          }
+          // If metadata has full work info (from Vercel), use it
+          if ("url" in workMetadata) {
+            return {
+              id: work.id,
+              url: workMetadata.url as string,
+              alt: workMetadata.alt as string || work.alt,
+              type: (workMetadata.type as "photo" | "video") || work.type,
+              projectTitle: workMetadata.projectTitle as string || work.projectTitle,
+              brand: workMetadata.brand as string || work.brand,
+              videoUrl: workMetadata.videoUrl as string | undefined,
+            };
+          }
         }
       }
       return work;

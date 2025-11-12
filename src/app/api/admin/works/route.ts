@@ -5,6 +5,7 @@ import path from "path";
 import { put } from "@vercel/blob";
 import { validateFileUpload, ALLOWED_IMAGE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, ALLOWED_IMAGE_MIMES, ALLOWED_VIDEO_MIMES, MAX_FILE_SIZE } from "@/lib/security";
 import { validateSlug } from "@/lib/security";
+import { commitToGitHub } from "@/app/api/admin/github-commit/route";
 
 const ARTIST_MEDIA_ROOT = path.join(process.cwd(), "public", "artists");
 
@@ -155,6 +156,93 @@ export async function POST(request: NextRequest) {
       }
 
       publicUrl = `/artists/${sanitizedSlug}/${fileName}`;
+    }
+
+    // On Vercel, also save work info to metadata
+    if (isVercel && hasBlobToken) {
+      try {
+        // Load current metadata
+        const githubToken = process.env.GITHUB_TOKEN;
+        const githubOwner = process.env.GITHUB_OWNER || "MuratBrls";
+        const githubRepo = process.env.GITHUB_REPO || "Portfoliodeneme";
+        const branch = "main";
+        const metadataPath = "data/artists-metadata.json";
+
+        // Fetch current metadata from GitHub
+        const getFileUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${metadataPath}?ref=${branch}`;
+        const getFileRes = await fetch(getFileUrl, {
+          headers: {
+            Authorization: `Bearer ${githubToken}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+          cache: "no-store",
+        });
+
+        let metadata: Record<string, any> = {};
+        if (getFileRes.ok) {
+          const fileData = await getFileRes.json();
+          const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+          metadata = JSON.parse(content);
+        }
+
+        // Initialize artist metadata if not exists
+        if (!metadata[sanitizedSlug]) {
+          metadata[sanitizedSlug] = {};
+        }
+        if (!metadata[sanitizedSlug].portfolio) {
+          metadata[sanitizedSlug].portfolio = {};
+        }
+
+        // Create work ID from filename
+        const workId = `${sanitizedSlug}-${fileName.replace(/\.[^/.]+$/, "")}`;
+        
+        // Parse brand and project from filename if available
+        const formatLabel = (raw: string): string => {
+          if (!raw) return "";
+          return raw
+            .split(/[-_]+/)
+            .filter(Boolean)
+            .map((segment) => {
+              const upper = segment.toUpperCase();
+              if (segment.length <= 3 || /^[A-Z0-9]+$/.test(segment)) {
+                return upper;
+              }
+              return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
+            })
+            .join(" ");
+        };
+
+        const parts = fileName.replace(/\.[^/.]+$/, "").split("__");
+        let brand = "";
+        let projectTitle = "";
+        if (parts.length >= 2) {
+          brand = formatLabel(parts[0]);
+          projectTitle = formatLabel(parts[1]);
+        } else {
+          brand = formatLabel(sanitizedSlug);
+          projectTitle = formatLabel(fileName.replace(/\.[^/.]+$/, ""));
+        }
+
+        // Add work to metadata
+        metadata[sanitizedSlug].portfolio[workId] = {
+          url: publicUrl,
+          alt: `${brand} ${projectTitle}`.trim(),
+          type: type,
+          projectTitle: projectTitle || brand,
+          brand: brand || formatLabel(sanitizedSlug),
+          fileName: fileName,
+        };
+
+        // Commit to GitHub
+        await commitToGitHub({
+          filePath: metadataPath,
+          message: `Add work: ${fileName} for ${sanitizedSlug}`,
+          content: JSON.stringify(metadata, null, 2),
+        });
+      } catch (metaError: any) {
+        console.error("Error saving work to metadata:", metaError);
+        // Don't fail the upload if metadata save fails
+      }
     }
 
     return NextResponse.json({
