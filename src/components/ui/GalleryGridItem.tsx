@@ -70,6 +70,7 @@ export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
           height={1000}
           className="h-auto w-full object-cover"
           priority={false}
+          unoptimized={work.url.includes("blob.vercel-storage.com") || work.url.includes("public.blob.vercel-storage.com")}
         />
       )}
 
