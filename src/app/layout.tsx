@@ -12,6 +12,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Kolektif — Visual Production Studio",
   description: "A modern showcase for artists, editorial work, and contact information inspired by PPR Istanbul.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+  },
 };
 
 export default function RootLayout({
