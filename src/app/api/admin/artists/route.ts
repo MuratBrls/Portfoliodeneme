@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
 import { validateSlug, sanitizeString, validateEmail } from "@/lib/security";
+import { commitToGitHub } from "@/app/api/admin/github-commit/route";
 
 const ARTIST_MEDIA_ROOT = path.join(process.cwd(), "public", "artists");
 
@@ -169,24 +170,16 @@ export async function POST(request: NextRequest) {
     // If on Vercel, commit to GitHub automatically
     if (isVercel) {
       try {
-        const commitRes = await fetch(`${request.nextUrl.origin}/api/admin/github-commit`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "x-internal-auth": "admin-authenticated",
-          },
-          body: JSON.stringify({
-            filePath: "data/artists-metadata.json",
-            message: `Add artist: ${name}`,
-            content: JSON.stringify(metadata, null, 2),
-          }),
+        const result = await commitToGitHub({
+          filePath: "data/artists-metadata.json",
+          message: `Add artist: ${name}`,
+          content: JSON.stringify(metadata, null, 2),
         });
         
-        if (!commitRes.ok) {
-          const commitError = await commitRes.json();
-          console.error("GitHub commit failed:", commitError);
+        if (!result.success) {
+          console.error("GitHub commit failed:", result.error);
           return NextResponse.json(
-            { error: commitError.error || "GitHub'a commit edilemedi" },
+            { error: result.error || "GitHub'a commit edilemedi" },
             { status: 500 }
           );
         }
@@ -314,24 +307,16 @@ export async function PATCH(request: NextRequest) {
     // If on Vercel, commit to GitHub automatically
     if (isVercel) {
       try {
-        const commitRes = await fetch(`${request.nextUrl.origin}/api/admin/github-commit`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "x-internal-auth": "admin-authenticated",
-          },
-          body: JSON.stringify({
-            filePath: "data/artists-metadata.json",
-            message: `Update artist: ${slug}`,
-            content: JSON.stringify(metadata, null, 2),
-          }),
+        const result = await commitToGitHub({
+          filePath: "data/artists-metadata.json",
+          message: `Update artist: ${slug}`,
+          content: JSON.stringify(metadata, null, 2),
         });
         
-        if (!commitRes.ok) {
-          const commitError = await commitRes.json();
-          console.error("GitHub commit failed:", commitError);
+        if (!result.success) {
+          console.error("GitHub commit failed:", result.error);
           return NextResponse.json(
-            { error: commitError.error || "GitHub'a commit edilemedi" },
+            { error: result.error || "GitHub'a commit edilemedi" },
             { status: 500 }
           );
         }
@@ -423,24 +408,16 @@ export async function DELETE(request: NextRequest) {
     // If on Vercel, commit to GitHub automatically
     if (isVercel) {
       try {
-        const commitRes = await fetch(`${request.nextUrl.origin}/api/admin/github-commit`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "x-internal-auth": "admin-authenticated",
-          },
-          body: JSON.stringify({
-            filePath: "data/artists-metadata.json",
-            message: `Delete artist: ${slug}`,
-            content: JSON.stringify(metadata, null, 2),
-          }),
+        const result = await commitToGitHub({
+          filePath: "data/artists-metadata.json",
+          message: `Delete artist: ${slug}`,
+          content: JSON.stringify(metadata, null, 2),
         });
         
-        if (!commitRes.ok) {
-          const commitError = await commitRes.json();
-          console.error("GitHub commit failed:", commitError);
+        if (!result.success) {
+          console.error("GitHub commit failed:", result.error);
           return NextResponse.json(
-            { error: commitError.error || "GitHub'a commit edilemedi" },
+            { error: result.error || "GitHub'a commit edilemedi" },
             { status: 500 }
           );
         }

@@ -4,35 +4,27 @@ import fs from "fs";
 import path from "path";
 
 async function checkAuth(request: NextRequest): Promise<boolean> {
-  // Check if this is an internal request (from same origin)
-  const referer = request.headers.get("referer");
-  const origin = request.headers.get("origin");
-  const isInternal = referer?.includes(request.nextUrl.origin) || origin === request.nextUrl.origin;
-  
-  // For internal requests from admin routes, we trust them (they already checked auth)
-  // For external requests, check cookie
-  if (isInternal) {
-    // Check if request has a special header indicating it's from an authenticated admin route
-    const internalAuth = request.headers.get("x-internal-auth");
-    if (internalAuth === "admin-authenticated") {
-      return true;
-    }
+  // This endpoint is only for internal server-side calls
+  // Check if request has the internal auth header from authenticated admin routes
+  const internalAuth = request.headers.get("x-internal-auth");
+  if (internalAuth === "admin-authenticated") {
+    return true;
   }
   
-  // Fallback to cookie check
+  // Also check cookie as fallback (for direct browser calls, though not recommended)
   const cookieStore = await cookies();
   const authCookie = cookieStore.get("admin-auth");
   return authCookie?.value === "authenticated";
 }
 
-interface GitHubCommitParams {
+export interface GitHubCommitParams {
   filePath: string;
   content: string;
   message: string;
   branch?: string;
 }
 
-async function commitToGitHub(params: GitHubCommitParams): Promise<{ success: boolean; error?: string }> {
+export async function commitToGitHub(params: GitHubCommitParams): Promise<{ success: boolean; error?: string }> {
   const { filePath, content, message, branch = "main" } = params;
 
   const githubToken = process.env.GITHUB_TOKEN;
