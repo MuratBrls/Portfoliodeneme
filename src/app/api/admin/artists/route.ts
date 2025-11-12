@@ -84,39 +84,74 @@ export async function POST(request: NextRequest) {
 
     const phone = sanitizeString(phoneRaw, 20);
 
+    // Check if we're on Vercel
+    const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
+    
+    if (isVercel) {
+      // On Vercel, file system writes are not persistent
+      return NextResponse.json(
+        { 
+          error: "Vercel'de yeni sanatçı eklenemez. Lütfen local'de ekleyin ve GitHub'a commit edin. Local'de: npm run dev ile siteyi başlatın, admin panelden sanatçı ekleyin, data/artists-metadata.json dosyasını GitHub'a commit edip push edin.",
+        },
+        { status: 503 }
+      );
+    }
+
     // ensure data dir
     const dataDir = path.join(process.cwd(), "data");
-    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-    const metadataPath = path.join(dataDir, "artists-metadata.json");
+    try {
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      const metadataPath = path.join(dataDir, "artists-metadata.json");
 
-    let metadata: Record<string, any> = {};
-    if (fs.existsSync(metadataPath)) {
-      metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+      let metadata: Record<string, any> = {};
+      if (fs.existsSync(metadataPath)) {
+        metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+      }
+
+      if (metadata[slug]) {
+        return NextResponse.json({ error: "Bu slug zaten mevcut" }, { status: 400 });
+      }
+
+      metadata[slug] = {
+        name,
+        bio,
+        specialty: specialty as any,
+        ...(instagram && { instagram }),
+        ...(email && { email }),
+        ...(phone && { phone }),
+      };
+
+      fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+
+      // create artist folder
+      const dir = path.join(ARTIST_MEDIA_ROOT, slug);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      return NextResponse.json({ success: true });
+    } catch (fsError: any) {
+      console.error("Error writing metadata file:", fsError);
+      return NextResponse.json(
+        { 
+          error: `Metadata dosyası yazılamadı: ${fsError.message || "Bilinmeyen hata"}`,
+        },
+        { status: 500 }
+      );
     }
-
-    if (metadata[slug]) {
-      return NextResponse.json({ error: "Bu slug zaten mevcut" }, { status: 400 });
-    }
-
-    metadata[slug] = {
-      name,
-      bio,
-      specialty: specialty as any,
-      ...(instagram && { instagram }),
-      ...(email && { email }),
-      ...(phone && { phone }),
-    };
-
-    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-
-    // create artist folder
-    const dir = path.join(ARTIST_MEDIA_ROOT, slug);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating artist:", error);
-    return NextResponse.json({ error: "Artist oluşturulamadı" }, { status: 500 });
+    const isProduction = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { 
+        error: isProduction 
+          ? "Artist oluşturulamadı" 
+          : (error.message || "Artist oluşturulamadı"),
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -173,35 +208,66 @@ export async function PATCH(request: NextRequest) {
 
     // This is a simple approach - in production, use a database
     // For now, we'll create a separate metadata file
+    const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
+    
+    if (isVercel) {
+      // On Vercel, file system writes are not persistent
+      // Metadata changes need to be committed to git
+      return NextResponse.json(
+        { 
+          error: "Vercel'de metadata güncellemesi yapılamaz. Lütfen local'de güncelleme yapın ve GitHub'a commit edin. Local'de: npm run dev ile siteyi başlatın, admin panelden güncelleme yapın, data/artists-metadata.json dosyasını GitHub'a commit edip push edin.",
+        },
+        { status: 503 }
+      );
+    }
+
     const dataDir = path.join(process.cwd(), "data");
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    try {
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+
+      const metadataPath = path.join(dataDir, "artists-metadata.json");
+      let metadata: Record<string, any> = {};
+
+      if (fs.existsSync(metadataPath)) {
+        metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+      }
+
+      if (!metadata[slug]) {
+        metadata[slug] = {};
+      }
+
+      if (name !== undefined) metadata[slug].name = name;
+      if (bio !== undefined) metadata[slug].bio = bio;
+      if (specialty !== undefined) metadata[slug].specialty = specialty as any;
+      if (instagram !== undefined) metadata[slug].instagram = instagram || undefined;
+      if (email !== undefined) metadata[slug].email = email || undefined;
+      if (phone !== undefined) metadata[slug].phone = phone || undefined;
+
+      fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+
+      return NextResponse.json({ success: true });
+    } catch (fsError: any) {
+      console.error("Error writing metadata file:", fsError);
+      return NextResponse.json(
+        { 
+          error: `Metadata dosyası yazılamadı: ${fsError.message || "Bilinmeyen hata"}`,
+        },
+        { status: 500 }
+      );
     }
-
-    const metadataPath = path.join(dataDir, "artists-metadata.json");
-    let metadata: Record<string, any> = {};
-
-    if (fs.existsSync(metadataPath)) {
-      metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
-    }
-
-    if (!metadata[slug]) {
-      metadata[slug] = {};
-    }
-
-    if (name !== undefined) metadata[slug].name = name;
-    if (bio !== undefined) metadata[slug].bio = bio;
-    if (specialty !== undefined) metadata[slug].specialty = specialty as any;
-    if (instagram !== undefined) metadata[slug].instagram = instagram || undefined;
-    if (email !== undefined) metadata[slug].email = email || undefined;
-    if (phone !== undefined) metadata[slug].phone = phone || undefined;
-
-    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating artist:", error);
-    return NextResponse.json({ error: "Failed to update artist" }, { status: 500 });
+    const isProduction = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { 
+        error: isProduction 
+          ? "Sanatçı güncellenemedi" 
+          : (error.message || "Sanatçı güncellenemedi"),
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -225,28 +291,59 @@ export async function DELETE(request: NextRequest) {
     }
     const slug = slugValidation.sanitized!;
 
+    // Check if we're on Vercel
+    const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
+    
+    if (isVercel) {
+      // On Vercel, file system writes are not persistent
+      return NextResponse.json(
+        { 
+          error: "Vercel'de sanatçı silinemez. Lütfen local'de silin ve GitHub'a commit edin. Local'de: npm run dev ile siteyi başlatın, admin panelden silin, değişiklikleri GitHub'a commit edip push edin.",
+        },
+        { status: 503 }
+      );
+    }
+
     // metadata remove
     const dataDir = path.join(process.cwd(), "data");
     const metadataPath = path.join(dataDir, "artists-metadata.json");
-    let metadata: Record<string, any> = {};
-    if (fs.existsSync(metadataPath)) {
-      metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
-    }
-    if (metadata[slug]) {
-      delete metadata[slug];
-      fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-    }
+    try {
+      let metadata: Record<string, any> = {};
+      if (fs.existsSync(metadataPath)) {
+        metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+      }
+      if (metadata[slug]) {
+        delete metadata[slug];
+        fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+      }
 
-    // remove folder recursively
-    const dir = path.join(ARTIST_MEDIA_ROOT, slug);
-    if (fs.existsSync(dir)) {
-      fs.rmSync(dir, { recursive: true, force: true });
-    }
+      // remove folder recursively
+      const dir = path.join(ARTIST_MEDIA_ROOT, slug);
+      if (fs.existsSync(dir)) {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
+      return NextResponse.json({ success: true });
+    } catch (fsError: any) {
+      console.error("Error deleting artist files:", fsError);
+      return NextResponse.json(
+        { 
+          error: `Sanatçı silinemedi: ${fsError.message || "Bilinmeyen hata"}`,
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error: any) {
     console.error("Error deleting artist:", error);
-    return NextResponse.json({ error: "Artist silinemedi" }, { status: 500 });
+    const isProduction = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { 
+        error: isProduction 
+          ? "Artist silinemedi" 
+          : (error.message || "Artist silinemedi"),
+      },
+      { status: 500 }
+    );
   }
 }
 

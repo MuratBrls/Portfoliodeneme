@@ -69,12 +69,14 @@ export function AdminArtistsManager() {
         }),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         setEditing(null);
         // Reload artists data
         await loadArtists();
       } else {
-        alert("Güncelleme sırasında bir hata oluştu");
+        alert(data.error || "Güncelleme sırasında bir hata oluştu");
       }
     } catch (error) {
       console.error("Error updating artist:", error);
