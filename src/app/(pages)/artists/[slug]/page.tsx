@@ -2,6 +2,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArtistPortfolioGrid } from "@/components/sections/ArtistPortfolioGrid";
 import { getArtistBySlug } from "@/data/artists";
+import fs from "fs";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -44,6 +46,19 @@ interface ArtistPageProps {
   params: Promise<{ slug: string }>;
 }
 
+function getMetadataFromLocal(): Record<string, any> {
+  try {
+    const metadataPath = path.join(process.cwd(), "data", "artists-metadata.json");
+    if (fs.existsSync(metadataPath)) {
+      const content = fs.readFileSync(metadataPath, "utf-8");
+      return JSON.parse(content);
+    }
+  } catch {
+    // Ignore errors
+  }
+  return {};
+}
+
 export default async function ArtistPage({ params }: ArtistPageProps) {
   const { slug } = await params;
   let artist = getArtistBySlug(slug);
@@ -52,30 +67,34 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
     notFound();
   }
 
-  // On Vercel, also load metadata from GitHub to get latest updates
+  // Load metadata from GitHub (Vercel) or local file system (local dev)
   const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
-  if (isVercel) {
-    try {
-      const githubMetadata = await getMetadataFromGitHub();
-      const githubMeta = githubMetadata[slug];
-      
-      if (githubMeta) {
-        // Merge GitHub metadata with artist data
-        artist = {
-          ...artist,
-          name: githubMeta.name !== undefined ? githubMeta.name : artist.name,
-          bio: githubMeta.bio !== undefined ? githubMeta.bio : artist.bio,
-          specialty: githubMeta.specialty !== undefined ? githubMeta.specialty : artist.specialty,
-          // null means field was deleted, undefined means use existing value
-          instagram: githubMeta.instagram !== undefined ? (githubMeta.instagram === null ? undefined : githubMeta.instagram) : artist.instagram,
-          email: githubMeta.email !== undefined ? (githubMeta.email === null ? undefined : githubMeta.email) : artist.email,
-          phone: githubMeta.phone !== undefined ? (githubMeta.phone === null ? undefined : githubMeta.phone) : artist.phone,
-        };
-      }
-    } catch (error) {
-      // If GitHub read fails, use file system data
-      console.error("Error loading metadata from GitHub:", error);
+  let metadata: Record<string, any> = {};
+  
+  try {
+    if (isVercel) {
+      metadata = await getMetadataFromGitHub();
+    } else {
+      metadata = getMetadataFromLocal();
     }
+    
+    const meta = metadata[slug];
+    if (meta) {
+      // Merge metadata with artist data
+      artist = {
+        ...artist,
+        name: meta.name !== undefined ? meta.name : artist.name,
+        bio: meta.bio !== undefined ? meta.bio : artist.bio,
+        specialty: meta.specialty !== undefined ? meta.specialty : artist.specialty,
+        // null means field was deleted, undefined means use existing value
+        instagram: meta.instagram !== undefined ? (meta.instagram === null ? undefined : meta.instagram) : artist.instagram,
+        email: meta.email !== undefined ? (meta.email === null ? undefined : meta.email) : artist.email,
+        phone: meta.phone !== undefined ? (meta.phone === null ? undefined : meta.phone) : artist.phone,
+      };
+    }
+  } catch (error) {
+    // If metadata read fails, use file system data
+    console.error("Error loading metadata:", error);
   }
 
   const works = (artist.portfolio ?? []).map((work) => ({

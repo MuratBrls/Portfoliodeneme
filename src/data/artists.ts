@@ -238,12 +238,13 @@ function ensureArtistMetaForSlug(slug: string): ArtistMeta {
   return {
     ...baseMeta,
     ...(metadataOverride && {
-      name: metadataOverride.name || baseMeta.name,
-      bio: metadataOverride.bio || baseMeta.bio,
-      specialty: metadataOverride.specialty || baseMeta.specialty,
-      instagram: metadataOverride.instagram || baseMeta.instagram,
-      email: metadataOverride.email || baseMeta.email,
-      phone: metadataOverride.phone || baseMeta.phone,
+      // Use metadata value if defined, otherwise use baseMeta value
+      name: metadataOverride.name !== undefined ? metadataOverride.name : baseMeta.name,
+      bio: metadataOverride.bio !== undefined ? metadataOverride.bio : baseMeta.bio,
+      specialty: metadataOverride.specialty !== undefined ? metadataOverride.specialty : baseMeta.specialty,
+      instagram: metadataOverride.instagram !== undefined ? (metadataOverride.instagram === null ? undefined : metadataOverride.instagram) : baseMeta.instagram,
+      email: metadataOverride.email !== undefined ? (metadataOverride.email === null ? undefined : metadataOverride.email) : baseMeta.email,
+      phone: metadataOverride.phone !== undefined ? (metadataOverride.phone === null ? undefined : metadataOverride.phone) : baseMeta.phone,
     }),
   };
 }
