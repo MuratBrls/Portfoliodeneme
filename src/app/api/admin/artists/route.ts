@@ -49,7 +49,37 @@ export async function GET() {
 
   try {
     const { getArtistsData } = await import("@/data/artists");
-    const artists = getArtistsData();
+    let artists = getArtistsData();
+    
+    // On Vercel, also load metadata from GitHub to get latest updates
+    const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
+    if (isVercel) {
+      try {
+        const githubMetadata = await getMetadataFromGitHub();
+        
+        // Merge GitHub metadata with artists data
+        artists = artists.map((artist) => {
+          const githubMeta = githubMetadata[artist.slug];
+          if (githubMeta) {
+            return {
+              ...artist,
+              name: githubMeta.name !== undefined ? githubMeta.name : artist.name,
+              bio: githubMeta.bio !== undefined ? githubMeta.bio : artist.bio,
+              specialty: githubMeta.specialty !== undefined ? githubMeta.specialty : artist.specialty,
+              // null means field was deleted, undefined means use existing value
+              instagram: githubMeta.instagram !== undefined ? (githubMeta.instagram === null ? undefined : githubMeta.instagram) : artist.instagram,
+              email: githubMeta.email !== undefined ? (githubMeta.email === null ? undefined : githubMeta.email) : artist.email,
+              phone: githubMeta.phone !== undefined ? (githubMeta.phone === null ? undefined : githubMeta.phone) : artist.phone,
+            };
+          }
+          return artist;
+        });
+      } catch (error) {
+        // If GitHub read fails, use file system data
+        console.error("Error loading metadata from GitHub:", error);
+      }
+    }
+    
     return NextResponse.json({ artists });
   } catch (error) {
     console.error("Error fetching artists:", error);
@@ -145,14 +175,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Bu slug zaten mevcut" }, { status: 400 });
     }
 
-    metadata[slug] = {
-      name,
-      bio,
-      specialty: specialty as any,
-      ...(instagram && { instagram }),
-      ...(email && { email }),
-      ...(phone && { phone }),
-    };
+      metadata[slug] = {
+        name,
+        bio,
+        specialty: specialty as any,
+        ...(instagram && { instagram }),
+        ...(email && { email }),
+        ...(phone && { phone }),
+      };
+      
+      // Remove null fields (they were explicitly set to empty)
+      if (metadata[slug].instagram === null) delete metadata[slug].instagram;
+      if (metadata[slug].email === null) delete metadata[slug].email;
+      if (metadata[slug].phone === null) delete metadata[slug].phone;
 
     // Write to file system (for local dev)
     if (!isVercel) {
@@ -293,9 +328,30 @@ export async function PATCH(request: NextRequest) {
     if (name !== undefined) metadata[slug].name = name;
     if (bio !== undefined) metadata[slug].bio = bio;
     if (specialty !== undefined) metadata[slug].specialty = specialty as any;
-    if (instagram !== undefined) metadata[slug].instagram = instagram || undefined;
-    if (email !== undefined) metadata[slug].email = email || undefined;
-    if (phone !== undefined) metadata[slug].phone = phone || undefined;
+    if (instagram !== undefined) {
+      // Empty string means remove the field (set to null to mark for deletion)
+      if (instagram === "") {
+        metadata[slug].instagram = null;
+      } else {
+        metadata[slug].instagram = instagram;
+      }
+    }
+    if (email !== undefined) {
+      // Empty string means remove the field (set to null to mark for deletion)
+      if (email === "") {
+        metadata[slug].email = null;
+      } else {
+        metadata[slug].email = email;
+      }
+    }
+    if (phone !== undefined) {
+      // Empty string means remove the field (set to null to mark for deletion)
+      if (phone === "") {
+        metadata[slug].phone = null;
+      } else {
+        metadata[slug].phone = phone;
+      }
+    }
 
     // Write to file system (for local dev)
     if (!isVercel) {
