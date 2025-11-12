@@ -5,7 +5,17 @@
     "specialty": "Editor",
     "instagram": "https://www.instagram.com/muratbarlss/",
     "phone": null,
-    "email": null
+    "email": null,
+    "portfolio": {
+      "murat-barlas-beymen__fw-26__photo": {
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/artists/murat-barlas/beymen__fw-26__photo.png",
+        "alt": "Beymen FW 26",
+        "type": "photo",
+        "projectTitle": "FW 26",
+        "brand": "Beymen",
+        "fileName": "beymen__fw-26__photo.png"
+      }
+    }
   },
   "ege-canim": {
     "name": "EGE Canim",
