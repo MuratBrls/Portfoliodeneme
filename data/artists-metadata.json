@@ -17,5 +17,10 @@
     "name": "deneme",
     "bio": "dadada",
     "specialty": "Photographer"
+  },
+  "durum-deneme": {
+    "name": "durum",
+    "bio": "",
+    "specialty": "Videographer"
   }
 }
