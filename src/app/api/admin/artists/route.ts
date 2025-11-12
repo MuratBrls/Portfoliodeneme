@@ -195,12 +195,12 @@ export async function POST(request: NextRequest) {
       const dataDir = path.join(process.cwd(), "data");
       const metadataPath = path.join(dataDir, "artists-metadata.json");
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-    }
-
-    // create artist folder
-    const dir = path.join(ARTIST_MEDIA_ROOT, slug);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+      
+      // create artist folder (only on local)
+      const dir = path.join(ARTIST_MEDIA_ROOT, slug);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
     }
 
     // If on Vercel, commit to GitHub automatically
@@ -451,12 +451,12 @@ export async function DELETE(request: NextRequest) {
       const dataDir = path.join(process.cwd(), "data");
       const metadataPath = path.join(dataDir, "artists-metadata.json");
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-    }
-
-    // remove folder recursively
-    const dir = path.join(ARTIST_MEDIA_ROOT, slug);
-    if (fs.existsSync(dir)) {
-      fs.rmSync(dir, { recursive: true, force: true });
+      
+      // remove folder recursively (only on local)
+      const dir = path.join(ARTIST_MEDIA_ROOT, slug);
+      if (fs.existsSync(dir)) {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
     }
 
     // If on Vercel, commit to GitHub automatically
