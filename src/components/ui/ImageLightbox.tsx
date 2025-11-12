@@ -2,13 +2,16 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import type { GalleryWork } from "@/data/artists";
 
 interface ImageLightboxProps {
   imageUrl: string | null;
   onClose: () => void;
+  work?: GalleryWork;
 }
 
-export function ImageLightbox({ imageUrl, onClose }: ImageLightboxProps) {
+export function ImageLightbox({ imageUrl, onClose, work }: ImageLightboxProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleKeyDown = useCallback(
@@ -63,7 +66,7 @@ export function ImageLightbox({ imageUrl, onClose }: ImageLightboxProps) {
             )}
             <img
               src={imageUrl}
-              alt="Expanded work image"
+              alt={work?.alt || "Expanded work image"}
               className="max-h-[90vh] max-w-[90vw] object-contain"
               style={{
                 opacity: imageLoaded ? 1 : 0,
@@ -71,6 +74,42 @@ export function ImageLightbox({ imageUrl, onClose }: ImageLightboxProps) {
               }}
               onLoad={() => setImageLoaded(true)}
             />
+            {work && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="mx-auto max-w-2xl space-y-3">
+                  {work.artistName && (
+                    <Link
+                      href={`/artists/${work.artistSlug}`}
+                      className="block text-lg font-semibold tracking-wide text-white hover:underline"
+                    >
+                      {work.artistName}
+                    </Link>
+                  )}
+                  {work.artistSpecialty && (
+                    <div className="text-xs uppercase tracking-[0.25em] text-white/80">
+                      {work.artistSpecialty}
+                    </div>
+                  )}
+                  <div className="h-px w-12 bg-white/70" />
+                  <div className="space-y-1">
+                    {work.brand && (
+                      <div className="text-sm text-white/80">{work.brand}</div>
+                    )}
+                    {work.projectTitle && (
+                      <div className="text-base font-light tracking-wide text-white">
+                        {work.projectTitle}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
             <button
               type="button"
               onClick={onClose}

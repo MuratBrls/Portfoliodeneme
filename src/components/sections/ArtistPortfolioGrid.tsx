@@ -10,7 +10,7 @@ interface ArtistPortfolioGridProps {
 }
 
 export function ArtistPortfolioGrid({ works }: ArtistPortfolioGridProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedWork, setSelectedWork] = useState<GalleryWork | null>(null);
 
   return (
     <>
@@ -20,14 +20,18 @@ export function ArtistPortfolioGrid({ works }: ArtistPortfolioGridProps) {
             <GalleryGridItem
               key={work.id}
               work={work}
-              onImageClick={setSelectedImage}
+              onImageClick={(url) => {
+                const clickedWork = works.find((w) => w.url === url);
+                setSelectedWork(clickedWork || null);
+              }}
             />
           ))}
         </div>
       </div>
       <ImageLightbox
-        imageUrl={selectedImage}
-        onClose={() => setSelectedImage(null)}
+        imageUrl={selectedWork?.url || null}
+        work={selectedWork || undefined}
+        onClose={() => setSelectedWork(null)}
       />
     </>
   );
