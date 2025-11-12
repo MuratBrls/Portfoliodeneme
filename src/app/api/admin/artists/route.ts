@@ -172,9 +172,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Check if artist already exists in metadata
     if (metadata[slug]) {
-      return NextResponse.json({ error: "Bu slug zaten mevcut" }, { status: 400 });
+      return NextResponse.json({ error: "Bu slug zaten mevcut. Güncelleme için PATCH kullanın." }, { status: 400 });
     }
+    
+    // If artist folder exists but no metadata, allow adding metadata
+    // This allows adding metadata for artists that exist only as folders
 
       metadata[slug] = {
         name,
