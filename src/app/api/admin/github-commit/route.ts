@@ -40,15 +40,23 @@ export async function commitToGitHub(params: GitHubCommitParams): Promise<{ succ
     const getFileUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}?ref=${branch}`;
     const getFileRes = await fetch(getFileUrl, {
       headers: {
-        Authorization: `token ${githubToken}`,
+        Authorization: `Bearer ${githubToken}`,
         Accept: "application/vnd.github.v3+json",
       },
+      cache: "no-store",
     });
 
     let sha: string | undefined;
     if (getFileRes.ok) {
       const fileData = await getFileRes.json();
       sha = fileData.sha;
+    } else if (getFileRes.status !== 404) {
+      // 404 is OK (file doesn't exist), but other errors are not
+      const errorData = await getFileRes.json().catch(() => ({}));
+      return {
+        success: false,
+        error: `GitHub'dan dosya okunamadı: ${errorData.message || getFileRes.statusText} (${getFileRes.status})`,
+      };
     }
 
     // Encode content to base64
@@ -59,7 +67,7 @@ export async function commitToGitHub(params: GitHubCommitParams): Promise<{ succ
     const commitRes = await fetch(commitUrl, {
       method: "PUT",
       headers: {
-        Authorization: `token ${githubToken}`,
+        Authorization: `Bearer ${githubToken}`,
         Accept: "application/vnd.github.v3+json",
         "Content-Type": "application/json",
       },
@@ -72,10 +80,10 @@ export async function commitToGitHub(params: GitHubCommitParams): Promise<{ succ
     });
 
     if (!commitRes.ok) {
-      const errorData = await commitRes.json();
+      const errorData = await commitRes.json().catch(() => ({}));
       return {
         success: false,
-        error: errorData.message || `GitHub API error: ${commitRes.statusText}`,
+        error: `GitHub'a commit edilemedi: ${errorData.message || commitRes.statusText} (${commitRes.status})`,
       };
     }
 
@@ -132,9 +140,10 @@ export async function POST(request: NextRequest) {
         const getFileUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}?ref=${branch}`;
         const getFileRes = await fetch(getFileUrl, {
           headers: {
-            Authorization: `token ${githubToken}`,
+            Authorization: `Bearer ${githubToken}`,
             Accept: "application/vnd.github.v3+json",
           },
+          cache: "no-store",
         });
 
         if (!getFileRes.ok) {

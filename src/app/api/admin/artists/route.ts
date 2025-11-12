@@ -27,9 +27,10 @@ async function getMetadataFromGitHub(): Promise<Record<string, any>> {
   const getFileUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}?ref=${branch}`;
   const getFileRes = await fetch(getFileUrl, {
     headers: {
-      Authorization: `token ${githubToken}`,
+      Authorization: `Bearer ${githubToken}`,
       Accept: "application/vnd.github.v3+json",
     },
+    cache: "no-store",
   });
 
   if (!getFileRes.ok) {
@@ -214,7 +215,7 @@ export async function POST(request: NextRequest) {
         if (!result.success) {
           console.error("GitHub commit failed:", result.error);
           return NextResponse.json(
-            { error: result.error || "GitHub'a commit edilemedi" },
+            { error: `GitHub'a commit edilemedi: ${result.error || "Bilinmeyen hata"}` },
             { status: 500 }
           );
         }
@@ -230,12 +231,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Error creating artist:", error);
-    const isProduction = process.env.NODE_ENV === "production";
     return NextResponse.json(
       { 
-        error: isProduction 
-          ? "Artist oluşturulamadı" 
-          : (error.message || "Artist oluşturulamadı"),
+        error: error.message || "Artist oluşturulamadı",
       },
       { status: 500 }
     );
