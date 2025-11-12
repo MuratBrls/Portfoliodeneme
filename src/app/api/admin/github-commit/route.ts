@@ -3,7 +3,23 @@ import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
 
-async function checkAuth() {
+async function checkAuth(request: NextRequest): Promise<boolean> {
+  // Check if this is an internal request (from same origin)
+  const referer = request.headers.get("referer");
+  const origin = request.headers.get("origin");
+  const isInternal = referer?.includes(request.nextUrl.origin) || origin === request.nextUrl.origin;
+  
+  // For internal requests from admin routes, we trust them (they already checked auth)
+  // For external requests, check cookie
+  if (isInternal) {
+    // Check if request has a special header indicating it's from an authenticated admin route
+    const internalAuth = request.headers.get("x-internal-auth");
+    if (internalAuth === "admin-authenticated") {
+      return true;
+    }
+  }
+  
+  // Fallback to cookie check
   const cookieStore = await cookies();
   const authCookie = cookieStore.get("admin-auth");
   return authCookie?.value === "authenticated";
@@ -81,7 +97,7 @@ async function commitToGitHub(params: GitHubCommitParams): Promise<{ success: bo
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await checkAuth())) {
+  if (!(await checkAuth(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -171,7 +171,10 @@ export async function POST(request: NextRequest) {
       try {
         const commitRes = await fetch(`${request.nextUrl.origin}/api/admin/github-commit`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "x-internal-auth": "admin-authenticated",
+          },
           body: JSON.stringify({
             filePath: "data/artists-metadata.json",
             message: `Add artist: ${name}`,
@@ -313,7 +316,10 @@ export async function PATCH(request: NextRequest) {
       try {
         const commitRes = await fetch(`${request.nextUrl.origin}/api/admin/github-commit`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "x-internal-auth": "admin-authenticated",
+          },
           body: JSON.stringify({
             filePath: "data/artists-metadata.json",
             message: `Update artist: ${slug}`,
@@ -419,7 +425,10 @@ export async function DELETE(request: NextRequest) {
       try {
         const commitRes = await fetch(`${request.nextUrl.origin}/api/admin/github-commit`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "x-internal-auth": "admin-authenticated",
+          },
           body: JSON.stringify({
             filePath: "data/artists-metadata.json",
             message: `Delete artist: ${slug}`,
