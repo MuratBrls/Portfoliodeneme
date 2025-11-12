@@ -7,16 +7,75 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const dynamicParams = true;
 
+async function getMetadataFromGitHub(): Promise<Record<string, any>> {
+  const githubToken = process.env.GITHUB_TOKEN;
+  const githubOwner = process.env.GITHUB_OWNER || "MuratBrls";
+  const githubRepo = process.env.GITHUB_REPO || "Portfoliodeneme";
+  const branch = "main";
+  const filePath = "data/artists-metadata.json";
+
+  if (!githubToken) {
+    return {};
+  }
+
+  try {
+    const getFileUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}?ref=${branch}`;
+    const getFileRes = await fetch(getFileUrl, {
+      headers: {
+        Authorization: `token ${githubToken}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+      cache: "no-store",
+    });
+
+    if (!getFileRes.ok) {
+      return {};
+    }
+
+    const fileData = await getFileRes.json();
+    const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+    return JSON.parse(content);
+  } catch {
+    return {};
+  }
+}
+
 interface ArtistPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export default async function ArtistPage({ params }: ArtistPageProps) {
   const { slug } = await params;
-  const artist = getArtistBySlug(slug);
+  let artist = getArtistBySlug(slug);
 
   if (!artist) {
     notFound();
+  }
+
+  // On Vercel, also load metadata from GitHub to get latest updates
+  const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
+  if (isVercel) {
+    try {
+      const githubMetadata = await getMetadataFromGitHub();
+      const githubMeta = githubMetadata[slug];
+      
+      if (githubMeta) {
+        // Merge GitHub metadata with artist data
+        artist = {
+          ...artist,
+          name: githubMeta.name !== undefined ? githubMeta.name : artist.name,
+          bio: githubMeta.bio !== undefined ? githubMeta.bio : artist.bio,
+          specialty: githubMeta.specialty !== undefined ? githubMeta.specialty : artist.specialty,
+          // null means field was deleted, undefined means use existing value
+          instagram: githubMeta.instagram !== undefined ? (githubMeta.instagram === null ? undefined : githubMeta.instagram) : artist.instagram,
+          email: githubMeta.email !== undefined ? (githubMeta.email === null ? undefined : githubMeta.email) : artist.email,
+          phone: githubMeta.phone !== undefined ? (githubMeta.phone === null ? undefined : githubMeta.phone) : artist.phone,
+        };
+      }
+    } catch (error) {
+      // If GitHub read fails, use file system data
+      console.error("Error loading metadata from GitHub:", error);
+    }
   }
 
   const works = (artist.portfolio ?? []).map((work) => ({
