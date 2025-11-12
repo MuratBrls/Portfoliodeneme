@@ -71,6 +71,17 @@ export default async function HomePage() {
               const existingWork = works.find((w) => w.id === workId);
               if (!existingWork) {
                 // Add work from metadata
+                type Specialty = "Photographer" | "Editor" | "Retoucher" | "Videographer" | "Assistant" | "Graphic Designer";
+                const specialtyValue = (artistMeta.specialty as string) || "Photographer";
+                const getSpecialty = (value: string): Specialty => {
+                  if (value === "Photographer" || value === "Editor" || value === "Retoucher" || 
+                      value === "Videographer" || value === "Assistant" || value === "Graphic Designer") {
+                    return value;
+                  }
+                  return "Photographer";
+                };
+                const specialty: Specialty = getSpecialty(specialtyValue);
+                
                 works.push({
                   id: workId,
                   url: workMeta.url as string,
@@ -81,7 +92,7 @@ export default async function HomePage() {
                   videoUrl: workMeta.videoUrl as string | undefined,
                   artistName: artistMeta.name as string || slug,
                   artistSlug: slug,
-                  artistSpecialty: artistMeta.specialty as string || "Photographer",
+                  artistSpecialty: specialty,
                 });
               }
             }
