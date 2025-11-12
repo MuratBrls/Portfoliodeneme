@@ -240,6 +240,12 @@ function findProfileImage(slug: string): string | null {
 interface PortfolioMetadata {
   [workId: string]: {
     videoUrl?: string;
+    url?: string;
+    alt?: string;
+    type?: "photo" | "video";
+    projectTitle?: string;
+    brand?: string;
+    fileName?: string;
   };
 }
 
