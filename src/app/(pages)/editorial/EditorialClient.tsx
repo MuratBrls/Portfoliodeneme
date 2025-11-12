@@ -98,6 +98,7 @@ export function EditorialClient({ works }: EditorialClientProps) {
                         fill
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        unoptimized={work.url.includes("blob.vercel-storage.com") || work.url.includes("public.blob.vercel-storage.com")}
                       />
                     </div>
                   ))}
