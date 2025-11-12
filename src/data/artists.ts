@@ -156,15 +156,32 @@ function loadPortfolioFromDisk(slug: string): WorkImage[] {
   const portfolioMetadata = metadata[slug]?.portfolio || {};
   const isVercel = process.env.VERCEL === "1" || process.env.VERCEL_ENV;
 
-  // On Vercel, read works from metadata (Blob Storage works are stored in metadata)
-  // Note: loadMetadata() reads from file system, but on Vercel we need GitHub metadata
-  // For now, we'll read from the file system metadata which should be synced from GitHub
-  // In the future, we could make this async and read directly from GitHub
-  if (isVercel) {
-    const works: WorkImage[] = [];
-    for (const [workId, workMeta] of Object.entries(portfolioMetadata)) {
-      if (workMeta && typeof workMeta === "object" && "url" in workMeta) {
-        works.push({
+  // On Vercel, combine works from both file system (if accessible) and metadata
+  // Note: On Vercel, file system is read-only but files from GitHub are available
+  // We need to read from both sources and merge them
+  const works: WorkImage[] = [];
+  const workMap = new Map<string, WorkImage>();
+
+  // First, try to read from file system (works from GitHub repo)
+  if (fs.existsSync(directoryPath)) {
+    const entries = fs.readdirSync(directoryPath, { withFileTypes: true });
+    entries
+      .filter((entry) => entry.isFile())
+      .filter((entry) => !entry.name.toLowerCase().startsWith(`${PROFILE_BASENAME}.`))
+      .forEach((entry, index) => {
+        const work = buildWorkFromFilename(slug, entry.name, index);
+        if (work) {
+          workMap.set(work.id, work);
+        }
+      });
+  }
+
+  // Then, add/update works from metadata (Blob Storage works or metadata overrides)
+  for (const [workId, workMeta] of Object.entries(portfolioMetadata)) {
+    if (workMeta && typeof workMeta === "object") {
+      if ("url" in workMeta) {
+        // Full work info from metadata (Blob Storage work)
+        workMap.set(workId, {
           id: workId,
           url: workMeta.url as string,
           alt: workMeta.alt as string || "",
@@ -173,47 +190,17 @@ function loadPortfolioFromDisk(slug: string): WorkImage[] {
           brand: workMeta.brand as string || "",
           videoUrl: workMeta.videoUrl as string | undefined,
         });
-      }
-    }
-    return works;
-  }
-
-  // Local: read from file system
-  if (!fs.existsSync(directoryPath)) {
-    return [];
-  }
-
-  const entries = fs.readdirSync(directoryPath, { withFileTypes: true });
-
-  return entries
-    .filter((entry) => entry.isFile())
-    .filter((entry) => !entry.name.toLowerCase().startsWith(`${PROFILE_BASENAME}.`))
-    .map((entry, index) => {
-      const work = buildWorkFromFilename(slug, entry.name, index);
-      if (work) {
-        // Add videoUrl from metadata if available
-        const workMetadata = portfolioMetadata[work.id];
-        if (workMetadata && typeof workMetadata === "object") {
-          if ("videoUrl" in workMetadata) {
-            work.videoUrl = workMetadata.videoUrl as string | undefined;
-          }
-          // If metadata has full work info (from Vercel), use it
-          if ("url" in workMetadata) {
-            return {
-              id: work.id,
-              url: workMetadata.url as string,
-              alt: workMetadata.alt as string || work.alt,
-              type: (workMetadata.type as "photo" | "video") || work.type,
-              projectTitle: workMetadata.projectTitle as string || work.projectTitle,
-              brand: workMetadata.brand as string || work.brand,
-              videoUrl: workMetadata.videoUrl as string | undefined,
-            };
-          }
+      } else if ("videoUrl" in workMeta) {
+        // Only videoUrl override for existing file system work
+        const existingWork = workMap.get(workId);
+        if (existingWork) {
+          existingWork.videoUrl = workMeta.videoUrl as string | undefined;
         }
       }
-      return work;
-    })
-    .filter((work): work is WorkImage => Boolean(work));
+    }
+  }
+
+  return Array.from(workMap.values());
 }
 
 function findProfileImage(slug: string): string | null {
