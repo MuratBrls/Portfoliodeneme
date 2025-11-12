@@ -209,7 +209,42 @@ interface ArtistMetadata extends Partial<ArtistMeta> {
   portfolio?: PortfolioMetadata;
 }
 
+async function loadMetadataFromGitHub(): Promise<Record<string, ArtistMetadata>> {
+  const githubToken = process.env.GITHUB_TOKEN;
+  const githubOwner = process.env.GITHUB_OWNER || "MuratBrls";
+  const githubRepo = process.env.GITHUB_REPO || "Portfoliodeneme";
+  const branch = "main";
+  const filePath = "data/artists-metadata.json";
+
+  if (!githubToken) {
+    return {};
+  }
+
+  try {
+    const getFileUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}?ref=${branch}`;
+    const getFileRes = await fetch(getFileUrl, {
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+      cache: "no-store",
+    });
+
+    if (!getFileRes.ok) {
+      return {};
+    }
+
+    const fileData = await getFileRes.json();
+    const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+    return JSON.parse(content);
+  } catch {
+    return {};
+  }
+}
+
 function loadMetadata(): Record<string, ArtistMetadata> {
+  // On Vercel, we can't use async in this context, so we'll handle it in getArtistsInternal
+  // For now, try to read from file system
   const metadataPath = path.join(process.cwd(), "data", "artists-metadata.json");
   if (fs.existsSync(metadataPath)) {
     try {
@@ -249,21 +284,29 @@ function ensureArtistMetaForSlug(slug: string): ArtistMeta {
   };
 }
 
-const getArtistsInternal = () =>
-  Array.from(new Set([...artistsMeta.map((meta) => meta.slug), ...getArtistFolders()])).map(
-    (slug) => {
-      const meta = ensureArtistMetaForSlug(slug);
-      const diskPortfolio = loadPortfolioFromDisk(slug);
-      const portfolio = diskPortfolio;
-      const profileImage = findProfileImage(slug) ?? meta.profileImageUrl;
+const getArtistsInternal = () => {
+  // Get all slugs from: hardcoded meta, folders, and metadata file
+  const metadata = loadMetadata();
+  const metadataSlugs = Object.keys(metadata);
+  const folderSlugs = getArtistFolders();
+  const hardcodedSlugs = artistsMeta.map((meta) => meta.slug);
+  
+  // Combine all unique slugs
+  const allSlugs = Array.from(new Set([...hardcodedSlugs, ...folderSlugs, ...metadataSlugs]));
+  
+  return allSlugs.map((slug) => {
+    const meta = ensureArtistMetaForSlug(slug);
+    const diskPortfolio = loadPortfolioFromDisk(slug);
+    const portfolio = diskPortfolio;
+    const profileImage = findProfileImage(slug) ?? meta.profileImageUrl;
 
-      return {
-        ...meta,
-        portfolio,
-        profileImageUrl: profileImage,
-      } satisfies Artist;
-    },
-  );
+    return {
+      ...meta,
+      portfolio,
+      profileImageUrl: profileImage,
+    } satisfies Artist;
+  });
+};
 
 export function getArtistsData() {
   return getArtistsInternal();
