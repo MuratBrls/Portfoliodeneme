@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} flex min-h-screen flex-col bg-neutral-100 text-neutral-900 antialiased transition-colors duration-300 dark:bg-black dark:text-white`}>
+      <body className={`${inter.className} flex min-h-screen flex-col bg-neutral-100 text-neutral-900 antialiased transition-colors duration-300 dark:bg-black dark:text-white`} style={{ backgroundColor: '#f5f5f5' }}>
         <ThemeProvider>
           <Navbar />
           <div className="flex-1">{children}</div>

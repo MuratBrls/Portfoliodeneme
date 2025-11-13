@@ -15,7 +15,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-200/50 bg-neutral-100/95 backdrop-blur-sm dark:border-white/10 dark:bg-black/80">
+    <header className="sticky top-0 z-50 border-b border-neutral-200/30 bg-neutral-100/98 backdrop-blur-sm dark:border-white/10 dark:bg-black/80" style={{ backgroundColor: 'rgba(245, 245, 245, 0.98)' }}>
       <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 text-sm uppercase tracking-wide md:px-6">
         <div className="flex items-center gap-2 md:gap-4">
           <Link

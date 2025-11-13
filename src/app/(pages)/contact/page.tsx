@@ -136,7 +136,7 @@ export default function ContactPage() {
             name="name"
             type="text"
             required
-            className="border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:border-white/10 dark:bg-black dark:text-white dark:focus:border-white"
+            className="!bg-white border border-neutral-300 px-4 py-3 text-sm !text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:!bg-black dark:border-white/10 dark:!text-white dark:focus:border-white"
           />
         </div>
 
@@ -149,7 +149,7 @@ export default function ContactPage() {
             name="email"
             type="email"
             required
-            className="border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:border-white/10 dark:bg-black dark:text-white dark:focus:border-white"
+            className="!bg-white border border-neutral-300 px-4 py-3 text-sm !text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:!bg-black dark:border-white/10 dark:!text-white dark:focus:border-white"
           />
         </div>
 
@@ -161,7 +161,7 @@ export default function ContactPage() {
             id="project"
             name="project"
             rows={5}
-            className="border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:border-white/10 dark:bg-black dark:text-white dark:focus:border-white"
+            className="!bg-white border border-neutral-300 px-4 py-3 text-sm !text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:!bg-black dark:border-white/10 dark:!text-white dark:focus:border-white"
           />
         </div>
 
