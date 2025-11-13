@@ -28,7 +28,16 @@ export default function ContactPage() {
         body: JSON.stringify(data),
       });
 
-      const result = await res.json();
+      let result;
+      try {
+        result = await res.json();
+      } catch (jsonError) {
+        console.error("JSON parse error:", jsonError);
+        setSuccess(false);
+        setError("Yanıt işlenirken bir hata oluştu. Lütfen tekrar deneyin.");
+        setLoading(false);
+        return;
+      }
       
       // Debug log
       console.log("Contact form response:", result);
@@ -62,6 +71,10 @@ export default function ContactPage() {
       }
     } catch (err) {
       console.error("Catch block - setting error");
+      console.error("Error details:", err);
+      console.error("Error type:", typeof err);
+      console.error("Error message:", err instanceof Error ? err.message : String(err));
+      console.error("Error stack:", err instanceof Error ? err.stack : "No stack");
       setSuccess(false);
       setError("Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
