@@ -96,40 +96,6 @@ Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.
         emailError = err;
         console.error("Error sending email to LUME:", err);
       }
-
-      // Send confirmation email to user (optional, don't fail if this fails)
-      if (emailSent) {
-        try {
-          await resend.emails.send({
-            from: fromEmail,
-            to: email,
-            subject: "Mesajınız Alındı - LUME",
-            html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Mesajınız Alındı</h2>
-            <div style="margin-top: 20px;">
-              <p>Merhaba ${name},</p>
-              <p>Mesajınızı aldık. En kısa sürede size dönüş yapacağız.</p>
-              <p style="margin-top: 30px; color: #666; font-size: 14px;">LUME Studio</p>
-            </div>
-          </div>
-        `,
-            text: `
-Mesajınız Alındı
-
-Merhaba ${name},
-
-Mesajınızı aldık. En kısa sürede size dönüş yapacağız.
-
-LUME Studio
-        `.trim(),
-          });
-          console.log("Confirmation email sent successfully");
-        } catch (err: any) {
-          // Don't fail if confirmation email fails, main email already sent
-          console.error("Error sending confirmation email (non-critical):", err);
-        }
-      }
     } else {
       // If no API key, just log the submission
       console.log("Contact form submission (email not sent - no RESEND_API_KEY):", { name, email, project: project.substring(0, 100) });
