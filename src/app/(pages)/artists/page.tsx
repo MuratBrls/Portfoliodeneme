@@ -115,8 +115,8 @@ export default async function ArtistsPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-16 md:px-6">
       <header className="mb-12 space-y-3">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Artists</h1>
-        <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-neutral-900 dark:text-white">Artists</h1>
+        <p className="max-w-2xl text-sm text-neutral-700 dark:text-neutral-300">
           LUME'in çekirdek kadrosu. Işıkla, renkle ve ritimle çalışan multidisipliner sanatçılar.
         </p>
       </header>
@@ -127,7 +127,7 @@ export default async function ArtistsPage() {
             href={`/artists/${artist.slug}`}
             className="group flex flex-col gap-4"
           >
-            <div className="overflow-hidden bg-neutral-200">
+            <div className="overflow-hidden bg-neutral-200 dark:bg-neutral-800">
               <Image
                 src={artist.profileImageUrl}
                 alt={artist.name}
@@ -137,10 +137,10 @@ export default async function ArtistsPage() {
               />
             </div>
             <div className="space-y-1 text-xs uppercase tracking-[0.3em]">
-              <span className="block text-sm font-semibold tracking-[0.2em]">
+              <span className="block text-sm font-semibold tracking-[0.2em] text-neutral-900 dark:text-white">
                 {artist.name}
               </span>
-              <span className="text-neutral-500 dark:text-neutral-400">
+              <span className="text-neutral-600 dark:text-neutral-400">
                 {artist.specialty}
               </span>
             </div>

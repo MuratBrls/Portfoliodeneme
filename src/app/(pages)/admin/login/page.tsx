@@ -45,8 +45,8 @@ export default function AdminLoginPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Admin Girişi</h1>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+          <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-neutral-900 dark:text-white">Admin Girişi</h1>
+          <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-400">
             Yönetim paneline erişmek için şifrenizi girin
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-neutral-300 bg-white px-4 py-2 pr-10 text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="w-full rounded-md border border-neutral-300 bg-white px-4 py-2 pr-10 text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                 required
                 autoFocus
               />
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full bg-black px-6 py-3 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+            className="w-full rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
             {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
           </button>

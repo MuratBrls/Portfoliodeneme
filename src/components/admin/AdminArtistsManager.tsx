@@ -255,7 +255,7 @@ export function AdminArtistsManager() {
         <div className="mt-3">
           <button
             type="submit"
-            className="rounded-full bg-black px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+            className="rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
             Ekle
           </button>
@@ -317,7 +317,7 @@ export function AdminArtistsManager() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                   />
                 </div>
 
@@ -327,7 +327,7 @@ export function AdminArtistsManager() {
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     rows={3}
-                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                   />
                 </div>
 
@@ -341,7 +341,7 @@ export function AdminArtistsManager() {
                         specialty: e.target.value as Artist["specialty"],
                       })
                     }
-                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                   >
                     <option value="Photographer">Photographer</option>
                     <option value="Editor">Editor</option>
@@ -359,7 +359,7 @@ export function AdminArtistsManager() {
                     value={formData.instagram}
                     onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
                     placeholder="@username veya URL"
-                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                   />
                 </div>
 
@@ -370,7 +370,7 @@ export function AdminArtistsManager() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="email@example.com"
-                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                   />
                 </div>
 
@@ -381,7 +381,7 @@ export function AdminArtistsManager() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+90 555 123 45 67"
-                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                    className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white dark:focus:ring-white"
                   />
                 </div>
 

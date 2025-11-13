@@ -250,7 +250,7 @@ export function AdminWorksManager() {
           <button
             type="submit"
             disabled={uploading}
-            className="rounded-full bg-black px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+            className="rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
             {uploading ? "Yükleniyor..." : "Yükle"}
           </button>
@@ -374,7 +374,7 @@ export function AdminWorksManager() {
                         }
                       }}
                       disabled={savingVideoUrl}
-                      className="flex-1 rounded-md bg-black px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                      className="flex-1 rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                     >
                       {savingVideoUrl ? "Kaydediliyor..." : "Kaydet"}
                     </button>

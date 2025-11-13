@@ -19,11 +19,11 @@ export default function AdminPage() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Admin Panel</h1>
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-neutral-900 dark:text-white">Admin Panel</h1>
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="rounded-full border border-black/20 bg-black/5 px-4 py-2 text-sm font-medium text-black transition-all duration-200 hover:bg-black hover:text-white hover:shadow-sm dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black"
+            className="rounded-full border border-neutral-300 bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-900 transition-all duration-200 hover:bg-neutral-900 hover:text-neutral-50 hover:shadow-sm dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black"
           >
             Home
           </Link>
@@ -41,26 +41,26 @@ export default function AdminPage() {
           onClick={() => setActiveTab("works")}
           className={`relative rounded-t-lg px-6 py-3 text-sm font-medium transition-all duration-200 ${
             activeTab === "works"
-              ? "bg-black/5 text-black shadow-sm dark:bg-white/5 dark:text-white"
-              : "text-neutral-500 hover:bg-black/5 hover:text-black dark:hover:bg-white/5 dark:hover:text-white"
+              ? "bg-neutral-100 text-neutral-900 shadow-sm dark:bg-white/5 dark:text-white"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-white/5 dark:hover:text-white"
           }`}
         >
           Görseller
           {activeTab === "works" && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-black dark:bg-white" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900 dark:bg-white" />
           )}
         </button>
         <button
           onClick={() => setActiveTab("artists")}
           className={`relative rounded-t-lg px-6 py-3 text-sm font-medium transition-all duration-200 ${
             activeTab === "artists"
-              ? "bg-black/5 text-black shadow-sm dark:bg-white/5 dark:text-white"
-              : "text-neutral-500 hover:bg-black/5 hover:text-black dark:hover:bg-white/5 dark:hover:text-white"
+              ? "bg-neutral-100 text-neutral-900 shadow-sm dark:bg-white/5 dark:text-white"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-white/5 dark:hover:text-white"
           }`}
         >
           Sanatçılar
           {activeTab === "artists" && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-black dark:bg-white" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900 dark:bg-white" />
           )}
         </button>
       </div>
