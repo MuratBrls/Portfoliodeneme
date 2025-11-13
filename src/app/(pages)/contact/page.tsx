@@ -28,6 +28,9 @@ export default function ContactPage() {
       });
 
       const result = await res.json();
+      
+      // Debug log
+      console.log("Contact form response:", result);
 
       if (res.ok) {
         e.currentTarget.reset();
@@ -41,7 +44,7 @@ export default function ContactPage() {
           setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
           setSuccess(false);
         } else {
-          // No email sent (no API key) but form succeeded
+          // No email sent (no API key) but form succeeded - show success anyway
           setSuccess(true);
           setError("");
         }

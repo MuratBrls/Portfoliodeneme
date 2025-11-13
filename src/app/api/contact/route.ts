@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
 
     // Send email to LUME
     if (resend) {
+      // Send email to LUME (main email)
       try {
         await resend.emails.send({
           from: fromEmail,
@@ -89,13 +90,21 @@ ${project ? `\nProje Detayları:\n${project}` : ''}
 Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.
         `.trim(),
         });
+        emailSent = true;
+        console.log("Email to LUME sent successfully");
+      } catch (err: any) {
+        emailError = err;
+        console.error("Error sending email to LUME:", err);
+      }
 
-        // Send confirmation email to user
-        await resend.emails.send({
-          from: fromEmail,
-          to: email,
-          subject: "Mesajınız Alındı - LUME",
-          html: `
+      // Send confirmation email to user (optional, don't fail if this fails)
+      if (emailSent) {
+        try {
+          await resend.emails.send({
+            from: fromEmail,
+            to: email,
+            subject: "Mesajınız Alındı - LUME",
+            html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Mesajınız Alındı</h2>
             <div style="margin-top: 20px;">
@@ -105,7 +114,7 @@ Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.
             </div>
           </div>
         `,
-          text: `
+            text: `
 Mesajınız Alındı
 
 Merhaba ${name},
@@ -114,20 +123,12 @@ Mesajınızı aldık. En kısa sürede size dönüş yapacağız.
 
 LUME Studio
         `.trim(),
-        });
-        
-        emailSent = true;
-      } catch (err: any) {
-        // Log email error but don't fail the request
-        emailError = err;
-        console.error("Email sending error:", err);
-        console.error("Error details:", {
-          message: err?.message,
-          name: err?.name,
-          statusCode: err?.statusCode,
-          response: err?.response
-        });
-        console.log("Contact form submission (email failed):", { name, email, project: project.substring(0, 100) });
+          });
+          console.log("Confirmation email sent successfully");
+        } catch (err: any) {
+          // Don't fail if confirmation email fails, main email already sent
+          console.error("Error sending confirmation email (non-critical):", err);
+        }
       }
     } else {
       // If no API key, just log the submission
@@ -138,8 +139,8 @@ LUME Studio
     return NextResponse.json({ 
       success: true, 
       message: "Mesajınız alındı. En kısa sürede size dönüş yapacağız.",
-      emailSent,
-      emailError: emailError ? `Email gönderilemedi: ${emailError?.message || "Bilinmeyen hata"}` : null
+      emailSent: emailSent, // true if main email sent successfully
+      emailError: emailSent ? null : (emailError ? `Email gönderilemedi: ${emailError?.message || "Bilinmeyen hata"}` : null)
     });
   } catch (error: any) {
     console.error("Contact form error:", error);
