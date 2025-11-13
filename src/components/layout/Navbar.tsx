@@ -24,7 +24,7 @@ export function Navbar() {
           >
             Home
           </Link>
-          <Link href="/" className="font-semibold tracking-[0.2em] text-black dark:text-white transition-opacity hover:opacity-80 md:tracking-[0.3em]">
+          <Link href="/" className="text-xl font-bold tracking-tight text-black dark:text-white transition-opacity hover:opacity-70 md:text-2xl">
             LUME
           </Link>
         </div>
