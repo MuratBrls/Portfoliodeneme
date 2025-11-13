@@ -32,13 +32,18 @@ export default function ContactPage() {
       if (res.ok) {
         e.currentTarget.reset();
         
-        // If email failed but form succeeded, show a warning instead of success
-        if (result.emailError) {
+        // Check if email was sent successfully
+        if (result.emailSent === true) {
+          setSuccess(true);
+          setError(""); // Clear any previous errors
+        } else if (result.emailError) {
+          // Email failed but form succeeded
           setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
           setSuccess(false);
         } else {
+          // No email sent (no API key) but form succeeded
           setSuccess(true);
-          setError(""); // Clear any previous errors
+          setError("");
         }
       } else {
         setError(result.error || "Bir hata oluştu. Lütfen tekrar deneyin.");
@@ -82,7 +87,7 @@ export default function ContactPage() {
             name="name"
             type="text"
             required
-            className="border border-black/10 bg-white px-4 py-3 text-sm uppercase tracking-[0.2em] outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
+            className="border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
           />
         </div>
 
@@ -95,7 +100,7 @@ export default function ContactPage() {
             name="email"
             type="email"
             required
-            className="border border-black/10 bg-white px-4 py-3 text-sm uppercase tracking-[0.2em] outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
+            className="border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
           />
         </div>
 
@@ -107,7 +112,7 @@ export default function ContactPage() {
             id="project"
             name="project"
             rows={5}
-            className="border border-black/10 bg-white px-4 py-3 text-sm uppercase tracking-[0.2em] outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
+            className="border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
           />
         </div>
 
