@@ -10,6 +10,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    // Clear both states immediately
     setError("");
     setSuccess(false);
 
@@ -31,28 +32,37 @@ export default function ContactPage() {
       
       // Debug log
       console.log("Contact form response:", result);
+      console.log("Response OK:", res.ok);
+      console.log("Email sent:", result.emailSent);
+      console.log("Email error:", result.emailError);
 
       if (res.ok) {
         e.currentTarget.reset();
         
-        // Check if email was sent successfully
+        // Check if email was sent successfully - prioritize emailSent
         if (result.emailSent === true) {
-          setSuccess(true);
-          setError(""); // Clear any previous errors
+          console.log("Setting success message");
+          setError(""); // Clear error first
+          setSuccess(true); // Then set success
         } else if (result.emailError) {
           // Email failed but form succeeded
-          setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
+          console.log("Setting error message (email failed)");
           setSuccess(false);
+          setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
         } else {
           // No email sent (no API key) but form succeeded - show success anyway
-          setSuccess(true);
+          console.log("Setting success message (no email sent)");
           setError("");
+          setSuccess(true);
         }
       } else {
-        setError(result.error || "Bir hata oluştu. Lütfen tekrar deneyin.");
+        console.log("Response not OK, setting error");
         setSuccess(false);
+        setError(result.error || "Bir hata oluştu. Lütfen tekrar deneyin.");
       }
     } catch (err) {
+      console.error("Catch block - setting error");
+      setSuccess(false);
       setError("Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
