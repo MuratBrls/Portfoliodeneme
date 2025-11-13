@@ -108,8 +108,8 @@ export default function ContactPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-16 md:px-6">
       <header className="mb-12 space-y-3">
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-neutral-900 dark:text-white">Contact</h1>
-        <p className="text-sm text-neutral-700 dark:text-neutral-300">
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Contact</h1>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">
           Yeni bir proje veya prodüksiyon için bize yazın. 24 saat içinde dönüş yapıyoruz.
         </p>
       </header>
@@ -136,7 +136,7 @@ export default function ContactPage() {
             name="name"
             type="text"
             required
-            className="!bg-white border border-neutral-300 px-4 py-3 text-sm !text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:!bg-black dark:border-white/10 dark:!text-white dark:focus:border-white"
+            className="border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
           />
         </div>
 
@@ -149,7 +149,7 @@ export default function ContactPage() {
             name="email"
             type="email"
             required
-            className="!bg-white border border-neutral-300 px-4 py-3 text-sm !text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:!bg-black dark:border-white/10 dark:!text-white dark:focus:border-white"
+            className="border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
           />
         </div>
 
@@ -161,14 +161,14 @@ export default function ContactPage() {
             id="project"
             name="project"
             rows={5}
-            className="!bg-white border border-neutral-300 px-4 py-3 text-sm !text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 dark:!bg-black dark:border-white/10 dark:!text-white dark:focus:border-white"
+            className="border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-black dark:border-white/10 dark:bg-black dark:focus:border-white"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full border border-neutral-900 bg-neutral-900 px-6 py-3 text-xs font-medium uppercase tracking-[0.3em] text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed dark:border-white dark:bg-white dark:text-black dark:hover:bg-transparent dark:hover:text-white"
+          className="w-full rounded-full border border-black bg-black px-6 py-3 text-xs font-medium uppercase tracking-[0.3em] text-white shadow-sm transition-all duration-200 hover:bg-white hover:text-black hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed dark:border-white dark:bg-white dark:text-black dark:hover:bg-transparent dark:hover:text-white"
         >
           {loading ? "Gönderiliyor..." : "Gönder"}
         </button>

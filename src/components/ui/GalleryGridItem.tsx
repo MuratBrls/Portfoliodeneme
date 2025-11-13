@@ -59,7 +59,7 @@ export function GalleryGridItem({ work, onImageClick }: GalleryGridItemProps) {
           />
         </div>
       ) : isVideo ? (
-        <div className="flex aspect-[3/4] w-full items-center justify-center bg-neutral-200 text-xs uppercase tracking-[0.2em] text-neutral-700 dark:bg-neutral-800 dark:text-white">
+        <div className="flex aspect-[3/4] w-full items-center justify-center bg-neutral-900/80 text-xs uppercase tracking-[0.2em] text-white dark:bg-neutral-800">
           Video: {work.projectTitle}
         </div>
       ) : (
