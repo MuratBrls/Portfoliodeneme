@@ -46,28 +46,51 @@ export default function ContactPage() {
       console.log("Email error:", result.emailError);
 
       if (res.ok) {
-        e.currentTarget.reset();
-        
         // Check if email was sent successfully - prioritize emailSent
         if (result.emailSent === true) {
           console.log("Setting success message");
-          setError(""); // Clear error first
-          setSuccess(true); // Then set success
+          try {
+            e.currentTarget.reset();
+            setError(""); // Clear error first
+            setSuccess(true); // Then set success
+          } catch (stateError) {
+            console.error("Error updating state:", stateError);
+            // Still show success even if state update fails
+            setSuccess(true);
+            setError("");
+          }
         } else if (result.emailError) {
           // Email failed but form succeeded
           console.log("Setting error message (email failed)");
-          setSuccess(false);
-          setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
+          try {
+            e.currentTarget.reset();
+            setSuccess(false);
+            setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
+          } catch (stateError) {
+            console.error("Error updating state:", stateError);
+            setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
+          }
         } else {
           // No email sent (no API key) but form succeeded - show success anyway
           console.log("Setting success message (no email sent)");
-          setError("");
-          setSuccess(true);
+          try {
+            e.currentTarget.reset();
+            setError("");
+            setSuccess(true);
+          } catch (stateError) {
+            console.error("Error updating state:", stateError);
+            setSuccess(true);
+            setError("");
+          }
         }
       } else {
         console.log("Response not OK, setting error");
-        setSuccess(false);
-        setError(result.error || "Bir hata oluştu. Lütfen tekrar deneyin.");
+        try {
+          setSuccess(false);
+          setError(result.error || "Bir hata oluştu. Lütfen tekrar deneyin.");
+        } catch (stateError) {
+          console.error("Error updating state:", stateError);
+        }
       }
     } catch (err) {
       console.error("Catch block - setting error");
