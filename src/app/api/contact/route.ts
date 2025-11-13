@@ -8,6 +8,15 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 export async function POST(request: NextRequest) {
   try {
+    // Debug: Log Resend initialization status (only in development)
+    if (process.env.NODE_ENV === "development") {
+      console.log("=== CONTACT FORM DEBUG ===");
+      console.log("RESEND_API_KEY:", process.env.RESEND_API_KEY ? "SET" : "NOT SET");
+      console.log("Resend initialized:", resend ? "YES" : "NO");
+      console.log("CONTACT_EMAIL:", process.env.CONTACT_EMAIL || process.env.ADMIN_EMAIL || "contact@lume.studio");
+      console.log("==========================");
+    }
+
     // Rate limiting: 10 submissions per hour
     const clientIP = getClientIP(request);
     const rateLimit = checkRateLimit(`contact-form-${clientIP}`, 10, 60 * 60 * 1000);
@@ -45,15 +54,18 @@ export async function POST(request: NextRequest) {
     const recipientEmail = process.env.CONTACT_EMAIL || process.env.ADMIN_EMAIL || "contact@lume.studio";
     const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
+    let emailSent = false;
+    let emailError: any = null;
+
     // Send email to LUME
     if (resend) {
       try {
         await resend.emails.send({
-        from: fromEmail,
-        to: recipientEmail,
-        replyTo: email,
-        subject: `Yeni İletişim Formu: ${name}`,
-        html: `
+          from: fromEmail,
+          to: recipientEmail,
+          replyTo: email,
+          subject: `Yeni İletişim Formu: ${name}`,
+          html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Yeni İletişim Formu Mesajı</h2>
             <div style="margin-top: 20px;">
@@ -66,7 +78,7 @@ export async function POST(request: NextRequest) {
             </div>
           </div>
         `,
-        text: `
+          text: `
 Yeni İletişim Formu Mesajı
 
 Gönderen: ${name}
@@ -76,14 +88,14 @@ ${project ? `\nProje Detayları:\n${project}` : ''}
 ---
 Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.
         `.trim(),
-      });
+        });
 
         // Send confirmation email to user
         await resend.emails.send({
-        from: fromEmail,
-        to: email,
-        subject: "Mesajınız Alındı - LUME",
-        html: `
+          from: fromEmail,
+          to: email,
+          subject: "Mesajınız Alındı - LUME",
+          html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Mesajınız Alındı</h2>
             <div style="margin-top: 20px;">
@@ -93,7 +105,7 @@ Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.
             </div>
           </div>
         `,
-        text: `
+          text: `
 Mesajınız Alındı
 
 Merhaba ${name},
@@ -103,10 +115,18 @@ Mesajınızı aldık. En kısa sürede size dönüş yapacağız.
 LUME Studio
         `.trim(),
         });
-      } catch (emailError) {
+        
+        emailSent = true;
+      } catch (err: any) {
         // Log email error but don't fail the request
-        console.error("Email sending error:", emailError);
-        // Log the submission even if email fails
+        emailError = err;
+        console.error("Email sending error:", err);
+        console.error("Error details:", {
+          message: err?.message,
+          name: err?.name,
+          statusCode: err?.statusCode,
+          response: err?.response
+        });
         console.log("Contact form submission (email failed):", { name, email, project: project.substring(0, 100) });
       }
     } else {
@@ -114,11 +134,22 @@ LUME Studio
       console.log("Contact form submission (email not sent - no RESEND_API_KEY):", { name, email, project: project.substring(0, 100) });
     }
 
-    return NextResponse.json({ success: true, message: "Mesajınız alındı. En kısa sürede size dönüş yapacağız." });
-  } catch (error) {
+    // Always return success, but include email status
+    return NextResponse.json({ 
+      success: true, 
+      message: "Mesajınız alındı. En kısa sürede size dönüş yapacağız.",
+      emailSent,
+      emailError: emailError ? `Email gönderilemedi: ${emailError?.message || "Bilinmeyen hata"}` : null
+    });
+  } catch (error: any) {
     console.error("Contact form error:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      name: error?.name,
+      stack: error?.stack
+    });
     return NextResponse.json(
-      { error: "Bir hata oluştu. Lütfen tekrar deneyin." },
+      { error: error?.message || "Bir hata oluştu. Lütfen tekrar deneyin." },
       { status: 500 }
     );
   }

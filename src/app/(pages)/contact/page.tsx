@@ -30,10 +30,19 @@ export default function ContactPage() {
       const result = await res.json();
 
       if (res.ok) {
-        setSuccess(true);
         e.currentTarget.reset();
+        
+        // If email failed but form succeeded, show a warning instead of success
+        if (result.emailError) {
+          setError("Mesajınız kaydedildi ancak email gönderilemedi. Lütfen daha sonra tekrar deneyin veya doğrudan iletişime geçin.");
+          setSuccess(false);
+        } else {
+          setSuccess(true);
+          setError(""); // Clear any previous errors
+        }
       } else {
         setError(result.error || "Bir hata oluştu. Lütfen tekrar deneyin.");
+        setSuccess(false);
       }
     } catch (err) {
       setError("Bir hata oluştu. Lütfen tekrar deneyin.");
