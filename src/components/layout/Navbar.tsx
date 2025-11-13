@@ -15,12 +15,12 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-neutral-50/80 backdrop-blur-md dark:border-white/10 dark:bg-black/80">
+    <header className="sticky top-0 z-50 border-b border-neutral-200/50 bg-neutral-100/95 backdrop-blur-sm dark:border-white/10 dark:bg-black/80">
       <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 text-sm uppercase tracking-wide md:px-6">
         <div className="flex items-center gap-2 md:gap-4">
           <Link
             href="/"
-            className="hidden rounded-full border border-neutral-300 bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-900 transition-all duration-200 hover:bg-neutral-900 hover:text-neutral-50 hover:shadow-sm dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black md:inline-block"
+            className="hidden rounded-full border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-900 transition-all duration-200 hover:bg-neutral-900 hover:text-white hover:shadow-sm dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black md:inline-block"
           >
             Home
           </Link>
@@ -54,7 +54,7 @@ export function Navbar() {
           {/* Theme Toggle */}
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-full border border-neutral-300 bg-neutral-100 p-2 text-neutral-900 transition-all duration-200 hover:bg-neutral-900 hover:text-neutral-50 hover:shadow-sm dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black"
+            className="rounded-full border border-neutral-300 bg-white p-2 text-neutral-900 transition-all duration-200 hover:bg-neutral-900 hover:text-white hover:shadow-sm dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black"
             aria-label="Toggle theme"
           >
             {mounted ? (
@@ -140,33 +140,33 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-neutral-200 bg-neutral-50/95 backdrop-blur-md dark:border-white/10 dark:bg-black/95 md:hidden">
+        <div className="border-t border-neutral-200/50 bg-neutral-100/95 backdrop-blur-sm dark:border-white/10 dark:bg-black/95 md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-xs font-medium uppercase tracking-wide text-neutral-800 dark:text-white">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-neutral-100 dark:hover:border-white/20 dark:hover:bg-white/5"
+              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-white dark:hover:border-white/20 dark:hover:bg-white/5"
             >
               Home
             </Link>
             <Link
               href="/artists"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-neutral-100 dark:hover:border-white/20 dark:hover:bg-white/5"
+              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-white dark:hover:border-white/20 dark:hover:bg-white/5"
             >
               Artists
             </Link>
             <Link
               href="/editorial"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-neutral-100 dark:hover:border-white/20 dark:hover:bg-white/5"
+              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-white dark:hover:border-white/20 dark:hover:bg-white/5"
             >
               Editorial
             </Link>
             <Link
               href="/contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-neutral-100 dark:hover:border-white/20 dark:hover:bg-white/5"
+              className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-neutral-300 hover:bg-white dark:hover:border-white/20 dark:hover:bg-white/5"
             >
               Contact
             </Link>
