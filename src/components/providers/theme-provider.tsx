@@ -14,7 +14,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
-      storageKey="kolektif-theme"
+      storageKey="lume-theme"
     >
       {children}
     </NextThemesProvider>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -10,13 +10,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Kolektif — Visual Production Studio",
+  title: "LUME — Visual Production Studio",
   description: "A modern showcase for artists, editorial work, and contact information inspired by PPR Istanbul.",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({

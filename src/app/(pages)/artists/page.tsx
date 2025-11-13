@@ -81,7 +81,7 @@ export default async function ArtistsPage() {
           id: slug,
           slug,
           name: meta.name || slug,
-          bio: meta.bio || "Multidisipliner kolektifimizin yeni üyesi. Görsel hikâyeler ve saf estetik arayışında.",
+          bio: meta.bio || "Multidisipliner LUME'in yeni üyesi. Görsel hikâyeler ve saf estetik arayışında.",
           specialty: meta.specialty || "Photographer",
           profileImageUrl: `https://i.pravatar.cc/300?u=${slug}`,
           portfolio: [],
@@ -117,7 +117,7 @@ export default async function ArtistsPage() {
       <header className="mb-12 space-y-3">
         <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">Artists</h1>
         <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
-          Kolektif'in çekirdek kadrosu. Işıkla, renkle ve ritimle çalışan multidisipliner sanatçılar.
+          LUME'in çekirdek kadrosu. Işıkla, renkle ve ritimle çalışan multidisipliner sanatçılar.
         </p>
       </header>
       <section className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">

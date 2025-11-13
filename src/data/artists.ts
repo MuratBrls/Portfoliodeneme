@@ -48,7 +48,7 @@ const VALID_MEDIA_EXTENSIONS = new Set([
 const ARTIST_DIRECTORY_SEPARATOR = "__";
 const PROFILE_BASENAME = "profile";
 const DEFAULT_BIO =
-  "Multidisipliner kolektifimizin yeni üyesi. Görsel hikâyeler ve saf estetik arayışında.";
+  "Multidisipliner LUME'in yeni üyesi. Görsel hikâyeler ve saf estetik arayışında.";
 
 const artistsMeta: ArtistMeta[] = [
   {

@@ -25,7 +25,7 @@ export function Navbar() {
             Home
           </Link>
           <Link href="/" className="font-semibold tracking-[0.2em] text-black dark:text-white transition-opacity hover:opacity-80 md:tracking-[0.3em]">
-            KOLEKTIF
+            LUME
           </Link>
         </div>
         <div className="flex items-center gap-2 md:gap-6">

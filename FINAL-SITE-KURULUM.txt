@@ -1,0 +1,130 @@
+================================================================================
+                    FINAL SITE - KURULUM TALİMATLARI
+================================================================================
+
+Dosya: final-site.zip
+Oluşturulma Tarihi: 12 Kasım 2025
+Proje: Portfolio Site - LUME Visual Production Studio
+
+================================================================================
+İÇERİK
+================================================================================
+
+✓ Tüm kaynak kodlar (src/ klasörü)
+✓ Public dosyalar ve görseller (public/ klasörü)
+✓ Metadata dosyaları (data/ klasörü)
+✓ Package dosyaları (package.json, package-lock.json)
+✓ Konfigürasyon dosyaları (next.config.ts, tailwind.config.ts, tsconfig.json)
+✓ README ve dokümantasyon dosyaları
+
+Hariç Tutulanlar:
+✗ node_modules/ (npm install ile yüklenecek)
+✗ .next/ (build klasörü)
+✗ .git/ (Git geçmişi)
+✗ .env* (Environment dosyaları - manuel oluşturulacak)
+
+================================================================================
+KURULUM ADIMLARI
+================================================================================
+
+1. ZIP DOSYASINI ÇIKAR
+   - final-site.zip dosyasını istediğiniz konuma çıkarın
+   - Örnek: C:\Projects\portfolio-site\
+
+2. TERMINAL'DE KLASÖRE GİDİN
+   cd C:\Projects\portfolio-site
+
+3. BAĞIMLILIKLARI YÜKLEYİN
+   npm install
+
+4. ENVIRONMENT DOSYASI OLUŞTURUN
+   - Klasörün kök dizininde .env.local dosyası oluşturun
+   - Aşağıdaki değişkenleri ekleyin:
+
+   ADMIN_PASSWORD=your-secure-password-here
+   GITHUB_TOKEN=your-github-token
+   GITHUB_OWNER=MuratBrls
+   GITHUB_REPO=Portfoliodeneme
+   BLOB_READ_WRITE_TOKEN=your-vercel-blob-token (opsiyonel, sadece Vercel için)
+
+5. DEVELOPMENT SERVER'I BAŞLATIN
+   npm run dev
+
+6. TARAYICIDA AÇIN
+   http://localhost:3000
+
+================================================================================
+ÖNEMLİ NOTLAR
+================================================================================
+
+- Admin paneli için: http://localhost:3000/admin/login
+- Admin şifresi: .env.local dosyasında belirttiğiniz ADMIN_PASSWORD
+- GitHub token'ı Vercel'de otomatik commit için gereklidir
+- Local'de çalışırken dosyalar file system'e yazılır
+- Vercel'de çalışırken GitHub API kullanılır
+
+================================================================================
+PRODUCTION BUILD
+================================================================================
+
+Build oluşturmak için:
+npm run build
+
+Build'i test etmek için:
+npm start
+
+================================================================================
+VERCEL DEPLOYMENT
+================================================================================
+
+Vercel'e deploy etmek için:
+1. Vercel hesabına giriş yapın
+2. Yeni proje oluşturun
+3. GitHub repository'yi bağlayın
+4. Environment variables'ları ekleyin:
+   - ADMIN_PASSWORD
+   - GITHUB_TOKEN
+   - GITHUB_OWNER
+   - GITHUB_REPO
+   - BLOB_READ_WRITE_TOKEN (opsiyonel)
+
+================================================================================
+ÖZELLİKLER
+================================================================================
+
+✓ Responsive tasarım (mobil uyumlu)
+✓ Dark/Light mode
+✓ Admin paneli (artist ve work yönetimi)
+✓ GitHub otomatik commit (Vercel'de)
+✓ Vercel Blob Storage desteği
+✓ Image lightbox
+✓ Video embed desteği
+✓ Editorial sayfası (marka bazlı gruplama)
+
+================================================================================
+SORUN GİDERME
+================================================================================
+
+Problem: "npm install" hata veriyor
+Çözüm: Node.js versiyonunu kontrol edin (18.x veya üzeri gerekli)
+
+Problem: "Module not found" hatası
+Çözüm: npm install'ı tekrar çalıştırın
+
+Problem: Admin paneli açılmıyor
+Çözüm: .env.local dosyasında ADMIN_PASSWORD'ın doğru olduğundan emin olun
+
+Problem: Görseller görünmüyor
+Çözüm: public/ klasörünün doğru konumda olduğundan emin olun
+
+================================================================================
+İLETİŞİM VE DESTEK
+================================================================================
+
+Sorularınız için GitHub repository'yi kontrol edin:
+https://github.com/MuratBrls/Portfoliodeneme
+
+================================================================================
+SON GÜNCELLEME: 12 Kasım 2025
+================================================================================
+
