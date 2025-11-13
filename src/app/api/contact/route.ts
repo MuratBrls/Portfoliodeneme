@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 import { checkRateLimit, getClientIP } from "@/lib/rate-limit";
 import { sanitizeString, validateEmail } from "@/lib/security";
+
+// Initialize Resend only if API key is provided
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,19 +41,84 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geçerli bir e-posta adresi giriniz" }, { status: 400 });
     }
 
-    // Here you would typically send an email or save to a database
-    // For now, we'll just log it and return success
-    console.log("Contact form submission:", { name, email, project: project.substring(0, 100) });
+    // Get recipient email from environment (default to a placeholder if not set)
+    const recipientEmail = process.env.CONTACT_EMAIL || process.env.ADMIN_EMAIL || "contact@lume.studio";
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
-    // TODO: Integrate with email service (e.g., SendGrid, Resend, etc.)
-    // TODO: Or save to database
+    // Send email to LUME
+    if (resend) {
+      try {
+        await resend.emails.send({
+        from: fromEmail,
+        to: recipientEmail,
+        replyTo: email,
+        subject: `Yeni İletişim Formu: ${name}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Yeni İletişim Formu Mesajı</h2>
+            <div style="margin-top: 20px;">
+              <p><strong>Gönderen:</strong> ${name}</p>
+              <p><strong>E-posta:</strong> <a href="mailto:${email}">${email}</a></p>
+              ${project ? `<div style="margin-top: 20px;"><strong>Proje Detayları:</strong><p style="white-space: pre-wrap; background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 10px;">${project}</p></div>` : ''}
+            </div>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
+              <p>Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.</p>
+            </div>
+          </div>
+        `,
+        text: `
+Yeni İletişim Formu Mesajı
 
-    return NextResponse.json({ success: true, message: "Mesajınız alındı. En kısa sürede dönüş yapacağız." });
+Gönderen: ${name}
+E-posta: ${email}
+${project ? `\nProje Detayları:\n${project}` : ''}
+
+---
+Bu mesaj LUME web sitesi iletişim formundan gönderilmiştir.
+        `.trim(),
+      });
+
+        // Send confirmation email to user
+        await resend.emails.send({
+        from: fromEmail,
+        to: email,
+        subject: "Mesajınız Alındı - LUME",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Mesajınız Alındı</h2>
+            <div style="margin-top: 20px;">
+              <p>Merhaba ${name},</p>
+              <p>Mesajınızı aldık. En kısa sürede size dönüş yapacağız.</p>
+              <p style="margin-top: 30px; color: #666; font-size: 14px;">LUME Studio</p>
+            </div>
+          </div>
+        `,
+        text: `
+Mesajınız Alındı
+
+Merhaba ${name},
+
+Mesajınızı aldık. En kısa sürede size dönüş yapacağız.
+
+LUME Studio
+        `.trim(),
+        });
+      } catch (emailError) {
+        // Log email error but don't fail the request
+        console.error("Email sending error:", emailError);
+        // Log the submission even if email fails
+        console.log("Contact form submission (email failed):", { name, email, project: project.substring(0, 100) });
+      }
+    } else {
+      // If no API key, just log the submission
+      console.log("Contact form submission (email not sent - no RESEND_API_KEY):", { name, email, project: project.substring(0, 100) });
+    }
+
+    return NextResponse.json({ success: true, message: "Mesajınız alındı. En kısa sürede size dönüş yapacağız." });
   } catch (error) {
     console.error("Contact form error:", error);
-    const isProduction = process.env.NODE_ENV === "production";
     return NextResponse.json(
-      { error: isProduction ? "Bir hata oluştu. Lütfen tekrar deneyin." : "Bir hata oluştu. Lütfen tekrar deneyin." },
+      { error: "Bir hata oluştu. Lütfen tekrar deneyin." },
       { status: 500 }
     );
   }

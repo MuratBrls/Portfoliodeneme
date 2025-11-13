@@ -20,23 +20,49 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Admin Panel
+ADMIN_PASSWORD=your-secure-password-here
+
+# Contact Form (Resend)
+RESEND_API_KEY=re_your_resend_api_key_here
+CONTACT_EMAIL=your-email@example.com
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+
+# GitHub (for Vercel deployments)
+GITHUB_TOKEN=your_github_token
+GITHUB_OWNER=your_github_username
+GITHUB_REPO=your_repo_name
+```
+
 ## Admin Panel
 
 The site includes an admin panel for managing content. To access it:
 
-1. Create a `.env.local` file in the root directory:
-   ```
-   ADMIN_PASSWORD=your-secure-password-here
-   ```
-
+1. Set the `ADMIN_PASSWORD` environment variable in `.env.local`
 2. Navigate to `/admin/login` and enter your password.
-
 3. Once logged in, you can:
    - Delete images from the homepage gallery
    - Edit artist names, biographies, and specialties
    - View all works and artists
 
 **Note:** Change the default password (`admin123`) in production! Set the `ADMIN_PASSWORD` environment variable to a secure password.
+
+## Contact Form
+
+The contact form uses [Resend](https://resend.com) for sending emails. To enable email functionality:
+
+1. Sign up for a free Resend account at https://resend.com
+2. Get your API key from the Resend dashboard
+3. Add `RESEND_API_KEY` to your `.env.local` file
+4. Set `CONTACT_EMAIL` to the email address where you want to receive contact form submissions
+5. (Optional) Set `RESEND_FROM_EMAIL` to your verified domain email (defaults to `onboarding@resend.dev`)
+
+**Note:** Without `RESEND_API_KEY`, the contact form will still work but emails won't be sent (submissions will be logged to console).
 
 ## Learn More
 
