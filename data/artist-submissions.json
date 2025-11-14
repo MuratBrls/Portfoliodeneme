@@ -31,7 +31,7 @@
   "sub-1763127475144-l4ouilf": {
     "id": "sub-1763127475144-l4ouilf",
     "createdAt": "2025-11-14T13:37:55.144Z",
-    "status": "pending",
+    "status": "rejected",
     "artist": {
       "slug": "ornek-deneme",
       "name": "dejene",
@@ -46,6 +46,7 @@
         "fileName": "asd__ff2__photo.png",
         "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/ornek-deneme/asd__ff2__photo.png"
       }
-    ]
+    ],
+    "rejectionReason": "nope"
   }
 }
