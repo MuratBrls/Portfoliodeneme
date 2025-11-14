@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { AdminWorksManager } from "@/components/admin/AdminWorksManager";
 import { AdminArtistsManager } from "@/components/admin/AdminArtistsManager";
+import { AdminSubmissionsManager } from "@/components/admin/AdminSubmissionsManager";
 import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<"works" | "artists">("works");
+  const [activeTab, setActiveTab] = useState<"works" | "artists" | "submissions">("submissions");
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -63,10 +64,24 @@ export default function AdminPage() {
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900 dark:bg-white" />
           )}
         </button>
+        <button
+          onClick={() => setActiveTab("submissions")}
+          className={`relative rounded-t-lg px-6 py-3 text-sm font-medium transition-all duration-200 ${
+            activeTab === "submissions"
+              ? "bg-neutral-100 text-neutral-900 shadow-sm dark:bg-white/5 dark:text-white"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-white/5 dark:hover:text-white"
+          }`}
+        >
+          Başvurular
+          {activeTab === "submissions" && (
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900 dark:bg-white" />
+          )}
+        </button>
       </div>
 
       {activeTab === "works" && <AdminWorksManager />}
       {activeTab === "artists" && <AdminArtistsManager />}
+      {activeTab === "submissions" && <AdminSubmissionsManager />}
     </main>
   );
 }
