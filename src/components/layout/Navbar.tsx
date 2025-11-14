@@ -53,7 +53,7 @@ export function Navbar() {
               href="/apply"
               className="rounded-full border border-transparent px-3 py-1.5 transition-all duration-200 hover:border-black/20 hover:bg-black/5 dark:hover:border-white/20 dark:hover:bg-white/5"
             >
-              Apply
+              Başvuru
             </Link>
           </div>
           
@@ -181,7 +181,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-full border border-transparent px-4 py-2 transition-all duration-200 hover:border-black/20 hover:bg-black/5 dark:hover:border-white/20 dark:hover:bg-white/5"
             >
-              Apply
+              Başvuru
             </Link>
           </div>
         </div>
