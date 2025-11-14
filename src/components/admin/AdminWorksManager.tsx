@@ -153,7 +153,13 @@ export function AdminWorksManager() {
 
     setDeleting(work.id);
     try {
-      const res = await fetch(`/api/admin/works?path=${encodeURIComponent(work.url)}`, {
+      // Build delete URL with work ID and artist slug for metadata deletion
+      const deleteUrl = new URL("/api/admin/works", window.location.origin);
+      deleteUrl.searchParams.set("path", work.url);
+      deleteUrl.searchParams.set("workId", work.id);
+      deleteUrl.searchParams.set("artistSlug", work.artistSlug);
+
+      const res = await fetch(deleteUrl.toString(), {
         method: "DELETE",
       });
 
