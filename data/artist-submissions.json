@@ -48,5 +48,26 @@
       }
     ],
     "rejectionReason": "nope"
+  },
+  "sub-1763132971585-claxh8s": {
+    "id": "sub-1763132971585-claxh8s",
+    "createdAt": "2025-11-14T15:09:31.585Z",
+    "status": "pending",
+    "artist": {
+      "slug": "dene-dene",
+      "name": "denemejeh",
+      "bio": "",
+      "specialty": "Videographer"
+    },
+    "works": [
+      {
+        "brand": "LE+VIST",
+        "projectTitle": "fw_25",
+        "type": "video",
+        "videoUrl": "https://www.youtube.com/watch?v=wrYCLqcPlUA&t=151s",
+        "fileName": "le-vist__fw-25__video.png",
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/dene-dene/le-vist__fw-25__video.png"
+      }
+    ]
   }
 }
