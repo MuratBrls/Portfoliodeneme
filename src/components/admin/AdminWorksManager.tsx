@@ -70,7 +70,21 @@ export function AdminWorksManager() {
   };
 
   const isExternalUrl = (url: string) => {
-    return url.startsWith("http://") || url.startsWith("https://");
+    // Check if it's an external URL (not our blob storage or local files)
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      // Blob storage URLs are considered internal
+      if (url.includes("blob.vercel-storage.com") || url.includes("public.blob.vercel-storage.com")) {
+        return false;
+      }
+      // Local file paths are internal
+      if (url.startsWith("/artists/") || url.startsWith("/submissions/")) {
+        return false;
+      }
+      // Everything else is external (e.g., Unsplash, external images)
+      return true;
+    }
+    // Local file paths are internal
+    return false;
   };
 
   const handleUpload = async (e: React.FormEvent) => {

@@ -311,12 +311,18 @@ export async function DELETE(request: NextRequest) {
     // Delete from blob storage if it's a blob storage URL
     if (isBlobStorageUrl && hasBlobToken) {
       try {
+        console.log("Attempting to delete from blob storage:", imagePath);
         await del(imagePath, {
           token: process.env.BLOB_READ_WRITE_TOKEN,
         });
-        console.log("File deleted from blob storage:", imagePath);
+        console.log("File successfully deleted from blob storage:", imagePath);
       } catch (blobError: any) {
         console.error("Error deleting from blob storage:", blobError);
+        console.error("Blob error details:", {
+          message: blobError?.message,
+          statusCode: blobError?.statusCode,
+          response: blobError?.response,
+        });
         // Continue to metadata deletion even if blob deletion fails
       }
     } else if (!isBlobStorageUrl) {
@@ -354,6 +360,7 @@ export async function DELETE(request: NextRequest) {
     // Delete from metadata if workId and artistSlug are provided
     if (workId && artistSlug) {
       try {
+        console.log("Attempting to delete work from metadata:", { workId, artistSlug, imagePath });
         // Load metadata
         let metadata: Record<string, any> = {};
         
@@ -379,18 +386,37 @@ export async function DELETE(request: NextRequest) {
               const fileData = await getFileRes.json();
               const content = Buffer.from(fileData.content, "base64").toString("utf-8");
               metadata = JSON.parse(content);
+              console.log("Metadata loaded from GitHub");
+            } else {
+              console.error("Failed to load metadata from GitHub:", getFileRes.status, getFileRes.statusText);
             }
+          } else {
+            console.error("GITHUB_TOKEN not set");
           }
         } else {
           // Local: read from file system
           const metadataPath = path.join(process.cwd(), "data", "artists-metadata.json");
           if (fs.existsSync(metadataPath)) {
             metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8"));
+            console.log("Metadata loaded from file system");
+          } else {
+            console.error("Metadata file not found:", metadataPath);
+          }
+        }
+
+        console.log("Metadata keys:", Object.keys(metadata));
+        console.log("Artist slug in metadata:", metadata[artistSlug] ? "YES" : "NO");
+        if (metadata[artistSlug]) {
+          console.log("Portfolio in metadata:", metadata[artistSlug].portfolio ? "YES" : "NO");
+          if (metadata[artistSlug].portfolio) {
+            console.log("Portfolio keys:", Object.keys(metadata[artistSlug].portfolio));
+            console.log("Work ID in portfolio:", metadata[artistSlug].portfolio[workId] ? "YES" : "NO");
           }
         }
 
         // Delete work from metadata
         if (metadata[artistSlug] && metadata[artistSlug].portfolio && metadata[artistSlug].portfolio[workId]) {
+          console.log("Deleting work from metadata:", workId);
           delete metadata[artistSlug].portfolio[workId];
           
           // If portfolio is empty, remove it
@@ -401,6 +427,7 @@ export async function DELETE(request: NextRequest) {
           // Save metadata
           if (isVercel) {
             // Commit to GitHub
+            console.log("Committing metadata deletion to GitHub");
             const result = await commitToGitHub({
               filePath: "data/artists-metadata.json",
               message: `Delete work: ${workId} from ${artistSlug}`,
@@ -409,17 +436,36 @@ export async function DELETE(request: NextRequest) {
 
             if (!result.success) {
               console.error("Error committing metadata deletion to GitHub:", result.error);
+              return NextResponse.json(
+                { error: `Metadata'dan silindi ancak GitHub'a commit edilemedi: ${result.error}` },
+                { status: 500 }
+              );
+            } else {
+              console.log("Metadata successfully deleted and committed to GitHub");
             }
           } else {
             // Local: write to file system
             const metadataPath = path.join(process.cwd(), "data", "artists-metadata.json");
             fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+            console.log("Metadata successfully deleted from file system");
           }
+        } else {
+          console.warn("Work not found in metadata:", { workId, artistSlug, hasArtist: !!metadata[artistSlug], hasPortfolio: !!(metadata[artistSlug]?.portfolio), hasWork: !!(metadata[artistSlug]?.portfolio?.[workId]) });
+          // Don't fail if work not found in metadata (might have been deleted already)
         }
       } catch (metadataError: any) {
         console.error("Error deleting work from metadata:", metadataError);
-        // Don't fail the request if metadata deletion fails
+        console.error("Metadata error details:", {
+          message: metadataError?.message,
+          stack: metadataError?.stack,
+        });
+        return NextResponse.json(
+          { error: `Metadata'dan silme hatası: ${metadataError?.message || "Bilinmeyen hata"}` },
+          { status: 500 }
+        );
       }
+    } else {
+      console.warn("workId or artistSlug not provided:", { workId, artistSlug });
     }
 
     return NextResponse.json({ success: true, message: "Görsel başarıyla silindi." });
