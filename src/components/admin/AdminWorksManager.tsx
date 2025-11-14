@@ -18,6 +18,7 @@ export function AdminWorksManager() {
     projectTitle: "",
     type: "photo" as "photo" | "video",
     file: null as File | null,
+    videoUrl: "",
   });
   const [editingVideoUrl, setEditingVideoUrl] = useState<string | null>(null);
   const [videoUrlForm, setVideoUrlForm] = useState<{ workId: string; videoUrl: string; artistSlug: string } | null>(null);
@@ -105,6 +106,9 @@ export function AdminWorksManager() {
       if (form.brand) fd.append("brand", form.brand);
       if (form.projectTitle) fd.append("projectTitle", form.projectTitle);
       fd.append("type", form.type);
+      if (form.type === "video" && form.videoUrl) {
+        fd.append("videoUrl", form.videoUrl);
+      }
 
       const res = await fetch("/api/admin/works", { method: "POST", body: fd });
       
@@ -135,7 +139,7 @@ export function AdminWorksManager() {
       }
       
       if (res.ok) {
-        setForm({ artistSlug: form.artistSlug, brand: "", projectTitle: "", type: "photo", file: null });
+        setForm({ artistSlug: form.artistSlug, brand: "", projectTitle: "", type: "photo", file: null, videoUrl: "" });
         await loadWorks(true);
         if (data.message) {
           console.info(data.message);
@@ -259,12 +263,32 @@ export function AdminWorksManager() {
             <label className="mb-1 block text-xs font-medium">Dosya</label>
             <input
               type="file"
-              accept="image/*,video/*"
+              accept={form.type === "video" ? "image/*" : "image/*,video/*"}
               onChange={(e) => setForm({ ...form, file: e.target.files?.[0] || null })}
               className="block w-full text-sm"
               required
             />
+            {form.type === "video" && (
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                Video için kapak fotoğrafı yükleyin
+              </p>
+            )}
           </div>
+          {form.type === "video" && (
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-xs font-medium">Video URL (YouTube veya Vimeo)</label>
+              <input
+                type="url"
+                value={form.videoUrl}
+                onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm dark:border-neutral-700 dark:bg-neutral-900"
+                placeholder="https://youtube.com/watch?v=... veya https://vimeo.com/..."
+              />
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                Video linkini buraya ekleyin (YouTube veya Vimeo)
+              </p>
+            </div>
+          )}
         </div>
         <div className="mt-3">
           <button

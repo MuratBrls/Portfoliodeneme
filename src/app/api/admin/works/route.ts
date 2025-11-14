@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     const brand = (form.get("brand") as string | null)?.trim() || "";
     const projectTitle = (form.get("projectTitle") as string | null)?.trim() || "";
     const typeRaw = (form.get("type") as string | null)?.trim().toLowerCase();
+    const videoUrl = (form.get("videoUrl") as string | null)?.trim() || "";
 
     if (!file) {
       return NextResponse.json({ error: "File is required" }, { status: 400 });
@@ -196,7 +197,7 @@ export async function POST(request: NextRequest) {
         // Create work ID from filename
         const workId = `${sanitizedSlug}-${fileName.replace(/\.[^/.]+$/, "")}`;
         
-        // Parse brand and project from filename if available
+        // Use brand and projectTitle from form if provided, otherwise parse from filename
         const formatLabel = (raw: string): string => {
           if (!raw) return "";
           return raw
@@ -212,26 +213,37 @@ export async function POST(request: NextRequest) {
             .join(" ");
         };
 
-        const parts = fileName.replace(/\.[^/.]+$/, "").split("__");
-        let brandFormatted = "";
-        let projectTitleFormatted = "";
-        if (parts.length >= 2) {
-          brandFormatted = formatLabel(parts[0]);
-          projectTitleFormatted = formatLabel(parts[1]);
-        } else {
-          brandFormatted = formatLabel(sanitizedSlug);
-          projectTitleFormatted = formatLabel(fileName.replace(/\.[^/.]+$/, ""));
+        // Use form values if provided, otherwise parse from filename
+        let brandFormatted = brand || "";
+        let projectTitleFormatted = projectTitle || "";
+        
+        if (!brandFormatted || !projectTitleFormatted) {
+          const parts = fileName.replace(/\.[^/.]+$/, "").split("__");
+          if (parts.length >= 2) {
+            brandFormatted = brandFormatted || formatLabel(parts[0]);
+            projectTitleFormatted = projectTitleFormatted || formatLabel(parts[1]);
+          } else {
+            brandFormatted = brandFormatted || formatLabel(sanitizedSlug);
+            projectTitleFormatted = projectTitleFormatted || formatLabel(fileName.replace(/\.[^/.]+$/, ""));
+          }
         }
 
         // Add work to metadata
-        metadata[sanitizedSlug].portfolio[workId] = {
+        const workMetadata: any = {
           url: publicUrl,
-          alt: `${brandFormatted} ${projectTitleFormatted}`.trim(),
+          alt: `${brandFormatted} ${projectTitleFormatted}`.trim() || fileName,
           type: type,
-          projectTitle: projectTitleFormatted || brandFormatted,
+          projectTitle: projectTitleFormatted || brandFormatted || fileName,
           brand: brandFormatted || formatLabel(sanitizedSlug),
           fileName: fileName,
         };
+        
+        // Add videoUrl if provided for video type
+        if (type === "video" && videoUrl) {
+          workMetadata.videoUrl = videoUrl;
+        }
+        
+        metadata[sanitizedSlug].portfolio[workId] = workMetadata;
 
         // Commit to GitHub
         await commitToGitHub({
