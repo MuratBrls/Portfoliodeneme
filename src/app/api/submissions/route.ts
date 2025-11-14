@@ -214,7 +214,7 @@ export async function POST(request: NextRequest) {
       const { getArtistsData } = await import("@/data/artists");
       const artists = getArtistsData();
       if (artists.some((a) => a.slug === slug)) {
-        return NextResponse.json({ error: "Bu slug ile zaten bir sanatçı mevcut" }, { status: 400 });
+        return NextResponse.json({ error: "Bu slug ile zaten bir profil mevcut" }, { status: 400 });
       }
     } catch (error) {
       // If check fails, continue (might be a race condition)
@@ -372,10 +372,10 @@ export async function POST(request: NextRequest) {
         await resend.emails.send({
           from: fromEmail,
           to: recipientEmail,
-          subject: `Yeni Sanatçı Başvurusu: ${name}`,
+          subject: `Yeni Portfolyo Başvurusu: ${name}`,
           html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Yeni Sanatçı Başvurusu</h2>
+            <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Yeni Portfolyo Başvurusu</h2>
             <div style="margin-top: 20px;">
               <p><strong>İsim:</strong> ${name}</p>
               <p><strong>Slug:</strong> ${slug}</p>
@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
           </div>
         `,
           text: `
-Yeni Sanatçı Başvurusu
+Yeni Portfolyo Başvurusu
 
 İsim: ${name}
 Slug: ${slug}

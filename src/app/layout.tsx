@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LUME — Visual Production Studio",
-  description: "A modern showcase for artists, editorial work, and contact information inspired by PPR Istanbul.",
+  title: "LUME — Portfolio Platform",
+  description: "Farklı uzmanlık alanlarına sahip yaratıcıların portfolyolarını paylaştığı bir platform.",
 };
 
 export const viewport: Viewport = {

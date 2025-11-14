@@ -345,7 +345,7 @@ export async function PATCH(request: NextRequest) {
               <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Başvurunuz Onaylandı!</h2>
               <div style="margin-top: 20px;">
                 <p>Merhaba ${submission.artist.name},</p>
-                <p>Başvurunuz incelendi ve onaylandı. Artık LUME'de profiliniz yayında!</p>
+                <p>Portfolyonuz incelendi ve onaylandı. Artık LUME'de profiliniz yayında!</p>
                 <p style="margin-top: 20px;">
                   <strong>Profiliniz:</strong><br>
                   <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://your-site.com"}/artists/${submission.artist.slug}" style="color: #000; text-decoration: underline;">
@@ -354,7 +354,7 @@ export async function PATCH(request: NextRequest) {
                 </p>
               </div>
               <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
-                <p>LUME Studio</p>
+                <p>LUME</p>
               </div>
             </div>
           `,
@@ -363,11 +363,11 @@ Başvurunuz Onaylandı!
 
 Merhaba ${submission.artist.name},
 
-Başvurunuz incelendi ve onaylandı. Artık LUME'de profiliniz yayında!
+Portfolyonuz incelendi ve onaylandı. Artık LUME'de profiliniz yayında!
 
 Profiliniz: ${process.env.NEXT_PUBLIC_SITE_URL || "https://your-site.com"}/artists/${submission.artist.slug}
 
-LUME Studio
+LUME
           `.trim(),
           });
         } catch (emailError) {
@@ -378,7 +378,7 @@ LUME Studio
 
       return NextResponse.json({
         success: true,
-        message: "Başvuru onaylandı ve sanatçı eklendi",
+        message: "Başvuru onaylandı ve portfolyo eklendi",
       });
     } else if (action === "reject") {
       // Update submission status (submission already loaded above)
@@ -400,12 +400,12 @@ LUME Studio
               <h2 style="color: #000; border-bottom: 2px solid #000; padding-bottom: 10px;">Başvuru Sonucu</h2>
               <div style="margin-top: 20px;">
                 <p>Merhaba ${submission.artist.name},</p>
-                <p>Başvurunuz incelendi ancak şu an için onaylanamadı.</p>
+                <p>Portfolyonuz incelendi ancak şu an için onaylanamadı.</p>
                 ${rejectionReason ? `<p style="margin-top: 20px;"><strong>Sebep:</strong><br>${rejectionReason}</p>` : ""}
                 <p style="margin-top: 20px;">Başka sorularınız varsa lütfen bizimle iletişime geçin.</p>
               </div>
               <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
-                <p>LUME Studio</p>
+                <p>LUME</p>
               </div>
             </div>
           `,
@@ -414,12 +414,12 @@ Başvuru Sonucu
 
 Merhaba ${submission.artist.name},
 
-Başvurunuz incelendi ancak şu an için onaylanamadı.
+Portfolyonuz incelendi ancak şu an için onaylanamadı.
 ${rejectionReason ? `\nSebep: ${rejectionReason}` : ""}
 
 Başka sorularınız varsa lütfen bizimle iletişime geçin.
 
-LUME Studio
+LUME
           `.trim(),
           });
         } catch (emailError) {

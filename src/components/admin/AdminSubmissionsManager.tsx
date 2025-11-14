@@ -81,7 +81,7 @@ export function AdminSubmissionsManager() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Başvuru onaylandı ve sanatçı eklendi");
+        alert("Başvuru onaylandı ve portfolyo eklendi");
         setSelectedSubmission(null);
         await loadSubmissions();
       } else {
@@ -279,7 +279,7 @@ export function AdminSubmissionsManager() {
               {/* Artist Information */}
               <section>
                 <h3 className="mb-3 text-lg font-semibold text-black dark:text-white">
-                  Sanatçı Bilgileri
+                  Kişisel Bilgiler
                 </h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   <div>

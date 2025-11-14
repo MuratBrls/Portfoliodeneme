@@ -133,10 +133,10 @@ export default function ApplyPage() {
     <main className="mx-auto w-full max-w-4xl px-4 py-12 md:px-6">
       <div className="mb-8">
         <h1 className="mb-4 text-3xl font-semibold uppercase tracking-[0.4em] text-black dark:text-white">
-          Sanatçı Başvurusu
+          Portfolyo Ekle
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          LUME'e katılmak için aşağıdaki formu doldurun. Başvurunuz incelendikten sonra size dönüş yapılacaktır.
+          Portfolyonuzu LUME'de paylaşmak için aşağıdaki formu doldurun. Başvurunuz incelendikten sonra portfolyonuz yayınlanacaktır.
         </p>
       </div>
 
@@ -160,7 +160,7 @@ export default function ApplyPage() {
         {/* Artist Information */}
         <section className="rounded-md border border-neutral-200 p-6 dark:border-neutral-800">
           <h2 className="mb-4 text-lg font-semibold uppercase tracking-[0.2em] text-black dark:text-white">
-            Sanatçı Bilgileri
+            Kişisel Bilgiler
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
