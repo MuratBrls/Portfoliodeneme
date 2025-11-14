@@ -1,2 +1,31 @@
-{}
-
+{
+  "sub-1763120999384-gr3ipo1": {
+    "id": "sub-1763120999384-gr3ipo1",
+    "createdAt": "2025-11-14T11:49:59.384Z",
+    "status": "pending",
+    "artist": {
+      "slug": "ornek-deneye",
+      "name": "denemeli",
+      "bio": "",
+      "specialty": "Photographer",
+      "instagram": "@muratbrlss",
+      "email": "murat.barlas123@gmail.com"
+    },
+    "works": [
+      {
+        "brand": "beymen2",
+        "projectTitle": "FW_24",
+        "type": "photo",
+        "fileName": "beymen2__fw-24__photo.png",
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/ornek-deneye/beymen2__fw-24__photo.png"
+      },
+      {
+        "brand": "Deneme",
+        "projectTitle": "SW_24",
+        "type": "photo",
+        "fileName": "deneme__sw-24__photo.png",
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/ornek-deneye/deneme__sw-24__photo.png"
+      }
+    ]
+  }
+}
