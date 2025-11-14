@@ -340,6 +340,11 @@ export function AdminSubmissionsManager() {
                       fill
                       className="object-cover"
                       sizes="192px"
+                      unoptimized={selectedSubmission.profileImage.url.startsWith("https://") && (selectedSubmission.profileImage.url.includes("blob.vercel-storage.com") || selectedSubmission.profileImage.url.includes("public.blob.vercel-storage.com"))}
+                      onError={(e) => {
+                        console.error("Profile image load error:", selectedSubmission.profileImage?.url);
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
                     />
                   </div>
                 </section>
@@ -357,13 +362,24 @@ export function AdminSubmissionsManager() {
                       className="overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800"
                     >
                       <div className="relative aspect-square bg-neutral-100 dark:bg-neutral-900">
-                        <Image
-                          src={work.url}
-                          alt={work.brand || work.projectTitle || `Work ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
+                        {work.url ? (
+                          <Image
+                            src={work.url}
+                            alt={work.brand || work.projectTitle || `Work ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            unoptimized={work.url.startsWith("https://") && (work.url.includes("blob.vercel-storage.com") || work.url.includes("public.blob.vercel-storage.com"))}
+                            onError={(e) => {
+                              console.error("Image load error:", work.url);
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
+                            Görsel yüklenemedi
+                          </div>
+                        )}
                       </div>
                       <div className="p-3">
                         <p className="text-xs font-medium text-black dark:text-white">
