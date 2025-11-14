@@ -39,5 +39,21 @@
         "fileName": "deneme__sw-24__photo.png"
       }
     }
+  },
+  "dene-dene": {
+    "name": "denemejeh",
+    "bio": "",
+    "specialty": "Videographer",
+    "portfolio": {
+      "dene-dene-le-vist__fw-25__video": {
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/dene-dene/le-vist__fw-25__video.png",
+        "alt": "LE+VIST fw_25",
+        "type": "video",
+        "projectTitle": "fw_25",
+        "brand": "LE+VIST",
+        "fileName": "le-vist__fw-25__video.png",
+        "videoUrl": "https://www.youtube.com/watch?v=wrYCLqcPlUA&t=151s"
+      }
+    }
   }
 }
