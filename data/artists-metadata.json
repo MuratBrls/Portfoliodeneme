@@ -37,5 +37,30 @@
     "name": "ornek",
     "bio": "deneme",
     "specialty": "Graphic Designer"
+  },
+  "ornek-deneye": {
+    "name": "denemeli",
+    "bio": "",
+    "specialty": "Photographer",
+    "instagram": "@muratbrlss",
+    "email": "murat.barlas123@gmail.com",
+    "portfolio": {
+      "ornek-deneye-beymen2__fw-24__photo": {
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/ornek-deneye/beymen2__fw-24__photo.png",
+        "alt": "beymen2 FW_24",
+        "type": "photo",
+        "projectTitle": "FW_24",
+        "brand": "beymen2",
+        "fileName": "beymen2__fw-24__photo.png"
+      },
+      "ornek-deneye-deneme__sw-24__photo": {
+        "url": "https://8gdjpm9xr0upekml.public.blob.vercel-storage.com/submissions/ornek-deneye/deneme__sw-24__photo.png",
+        "alt": "Deneme SW_24",
+        "type": "photo",
+        "projectTitle": "SW_24",
+        "brand": "Deneme",
+        "fileName": "deneme__sw-24__photo.png"
+      }
+    }
   }
 }
